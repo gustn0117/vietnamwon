@@ -230,17 +230,16 @@ export function HomePage() {
         <Image src="/images/dark-hero.png" alt="호치민 야경이 보이는 프리미엄 VIP 라운지" fill priority sizes="100vw" className="hero-image" />
         <div className="hero-shade" />
         <div className="shell hero-inner" id="main-content">
-          <p className="eyebrow">VIETNAM PREMIUM CONCIERGE</p>
           <h1>베트남의 밤,<br /><em>가장 완벽하게</em></h1>
           <p className="hero-copy">검증된 현지 파트너와 함께하는 프라이빗 VIP 컨시어지</p>
           <div className="hero-buttons">
-            <button className="gold-button hero-primary" type="button" onClick={openConsult}><ChatsCircle size={23} weight="fill" /> VIP 맞춤 상담 <ArrowRight /></button>
+            <button className="gold-button hero-primary" type="button" onClick={openConsult}><ChatsCircle weight="fill" /> VIP 맞춤 상담 <ArrowRight /></button>
             <a className="outline-button" href="#services">서비스 둘러보기 <ArrowRight /></a>
           </div>
           <div className="hero-trust" aria-label="서비스 장점">
-            <span><ShieldCheck size={22} /> 검증된 현지 파트너</span>
-            <span><LockKey size={22} /> 프라이빗 & 안전한 진행</span>
-            <span><Crown size={22} /> 1:1 맞춤 컨시어지</span>
+            <span><ShieldCheck /> 검증된 현지 파트너</span>
+            <span><LockKey /> 프라이빗 & 안전한 진행</span>
+            <span><Crown /> 1:1 맞춤 컨시어지</span>
           </div>
         </div>
         <div className="hero-signature" aria-hidden="true"><span>More Than a Trip</span><small>당신만을 위한, 특별한 베트남</small></div>
@@ -260,9 +259,9 @@ export function HomePage() {
                 const Icon = service.icon;
                 return (
                   <button className="service-card" type="button" key={service.title} onClick={() => setSelected(service)}>
-                    <Image src={service.image} alt="" fill sizes="(max-width: 680px) 84vw, (max-width: 1024px) 34vw, 17vw" style={{ objectPosition: service.position }} />
+                    <Image src={service.image} alt="" fill sizes="(max-width: 760px) 70vw, (max-width: 1080px) 34vw, 18vw" style={{ objectPosition: service.position }} />
                     <span className="service-overlay" />
-                    <span className="service-copy"><Icon size={27} weight="duotone" /><span><strong>{service.title}</strong><small>{service.subtitle}</small></span></span>
+                    <span className="service-copy"><Icon weight="duotone" /><span><strong>{service.title}</strong><small>{service.subtitle}</small></span></span>
                     <span className="service-arrow"><ArrowRight /></span>
                   </button>
                 );
@@ -270,7 +269,7 @@ export function HomePage() {
             </div>
           ) : (
             <div className="empty-state">
-              <MagnifyingGlass size={38} /><h2>검색 결과가 없습니다</h2><p>카지노, 밤문화, 호텔처럼 원하는 서비스를 검색해보세요.</p>
+              <MagnifyingGlass size={48} color="var(--gold)" /><h2>검색 결과가 없습니다</h2><p>카지노, 밤문화, 호텔처럼 원하는 서비스를 검색해보세요.</p>
               <button type="button" onClick={() => { setQuery(""); setSearched(false); }}>전체 서비스 보기</button>
             </div>
           )}
@@ -280,14 +279,14 @@ export function HomePage() {
       <section className="experience-section" id="experience">
         <div className="shell">
           <div className="experience-heading">
-            <div><p className="eyebrow">TAILORED FOR YOU</p><h2>오늘 밤, 무엇을 원하시나요?</h2></div>
+            <h2>오늘 밤,<br />무엇을 원하시나요?</h2>
             <p>여행을 넘어, 잊지 못할 경험으로.<br />ONE AGENCY가 당신의 특별한 베트남을 완성합니다.</p>
-            <a href="#consult">모든 서비스 보기 <ArrowRight /></a>
+            <a href="#services">모든 서비스 보기 <ArrowRight /></a>
           </div>
           <div className="experience-grid">
             {experiences.map((item) => (
               <button type="button" className="experience-card" key={item.title} onClick={() => setSelected(item.service)}>
-                <Image src={item.image ?? item.service.image} alt="" fill sizes="(max-width: 760px) 100vw, 25vw" style={{ objectPosition: item.service.position }} />
+                <Image src={item.image ?? item.service.image} alt="" fill sizes="(max-width: 760px) 100vw, 50vw" style={{ objectPosition: item.service.position }} />
                 <span className="experience-overlay" /><span><strong>{item.title}</strong><small>{item.copy}</small></span>
               </button>
             ))}
@@ -297,7 +296,7 @@ export function HomePage() {
 
       <section className="promise-section">
         <div className="shell promise-grid">
-          <div className="promise-intro"><p className="eyebrow">PRIVATE BY DESIGN</p><h2>처음부터 마지막까지<br />오직 당신만을 위해</h2><p>현지에서 오래 쌓은 네트워크와 전담 컨시어지가 일정의 모든 순간을 세심하게 설계합니다.</p></div>
+          <div className="promise-intro"><h2>처음부터 마지막까지<br />오직 당신만을 위해</h2><p>현지에서 오래 쌓은 네트워크와 전담 컨시어지가 일정의 모든 순간을 세심하게 설계합니다.</p></div>
           <div className="promise-list">
             <article><ShieldCheck weight="duotone" /><div><strong>검증된 현지 파트너</strong><p>직접 확인한 장소와 서비스만 제안합니다.</p></div></article>
             <article><Headset weight="duotone" /><div><strong>24시간 전담 컨시어지</strong><p>낯선 순간에도 한국어로 빠르게 도와드립니다.</p></div></article>
@@ -311,14 +310,14 @@ export function HomePage() {
         <Image src="/images/dark-vehicle.png" alt="프라이빗 차량과 VIP 서비스" fill sizes="100vw" />
         <div className="consult-shade" />
         <div className="shell consult-content">
-          <div><p className="eyebrow">YOUR NIGHT, OUR EXPERTISE</p><h2>당신만의 특별한 밤을<br />지금 시작하세요.</h2><p>원하는 일정과 취향을 알려주시면 전담 컨시어지가 빠르게 답변드립니다.</p></div>
+          <div><h2>당신만의 특별한 밤을<br />지금 시작하세요.</h2><p>원하는 일정과 취향을 알려주시면 전담 컨시어지가 빠르게 답변드립니다.</p></div>
           <button className="gold-button" type="button" onClick={openConsult}>지금 1:1 상담하기 <ArrowRight /></button>
         </div>
       </section>
 
       <footer className="site-footer">
         <div className="shell footer-grid">
-          <div className="footer-brand"><Image src="/images/one-agency-logo.png" alt="ONE AGENCY" width={164} height={141} /><p>CASINO MARKETING & VIP SERVICES</p></div>
+          <div className="footer-brand"><Image src="/images/one-agency-logo.png" alt="ONE AGENCY Casino Marketing & VIP Services" width={174} height={149} /></div>
           <div className="footer-links"><a href="#services">서비스</a><a href="#experience">ONE AGENCY 경험</a><button type="button" onClick={openConsult}>1:1 상담</button></div>
           <div className="footer-legal"><span>이용약관</span><span>개인정보처리방침</span><span>© 2026 ONE AGENCY</span></div>
         </div>
@@ -331,9 +330,9 @@ export function HomePage() {
           <button className="modal-backdrop" aria-label="상세 정보 닫기" onClick={() => setSelected(null)} />
           <section className="service-modal">
             <button ref={closeButtonRef} className="modal-close" type="button" onClick={() => setSelected(null)} aria-label="닫기"><X /></button>
-            <div className="modal-image"><Image src={selected.image} alt={`${selected.title} 이미지`} fill sizes="(max-width: 760px) 100vw, 520px" /></div>
+            <div className="modal-image"><Image src={selected.image} alt={`${selected.title} 이미지`} fill sizes="(max-width: 1080px) 100vw, 620px" /></div>
             <div className="modal-copy">
-              <p className="eyebrow">{selected.english}</p><h2 id="service-modal-title">{selected.title}</h2><p>{selected.description}</p>
+              <h2 id="service-modal-title">{selected.title}</h2><p>{selected.description}</p>
               <ul><li><CheckCircle weight="fill" /> 일정과 예산에 맞춘 1:1 추천</li><li><CheckCircle weight="fill" /> 현지 이동과 예약까지 한 번에</li><li><CheckCircle weight="fill" /> 상담 내용과 일정은 철저히 비공개</li></ul>
               <button className="gold-button" type="button" onClick={() => { setSelected(null); openConsult(); }}>이 서비스 상담하기 <ArrowRight /></button>
             </div>
@@ -347,10 +346,10 @@ export function HomePage() {
           <section className="consult-modal">
             <button ref={closeButtonRef} className="modal-close" type="button" onClick={() => setConsultOpen(false)} aria-label="닫기"><X /></button>
             {submitted ? (
-              <div className="success-state" role="status"><CheckCircle weight="fill" /><p className="eyebrow">REQUEST RECEIVED</p><h2 id="consult-modal-title">상담 요청이 접수됐어요</h2><p>남겨주신 내용을 확인한 뒤 전담 컨시어지가 빠르게 연락드리겠습니다.</p><button className="gold-button" type="button" onClick={() => setConsultOpen(false)}>확인</button></div>
+              <div className="success-state" role="status"><CheckCircle weight="fill" /><h2 id="consult-modal-title">상담 요청이 접수됐어요</h2><p>남겨주신 내용을 확인한 뒤 전담 컨시어지가 빠르게 연락드리겠습니다.</p><button className="gold-button" type="button" onClick={() => setConsultOpen(false)}>확인</button></div>
             ) : (
               <form className="consult-form" onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}>
-                <p className="eyebrow">1:1 PRIVATE CONCIERGE</p><h2 id="consult-modal-title">VIP 맞춤 상담</h2><p>원하는 일정과 서비스를 남겨주시면 취향과 예산에 맞춰 안내해 드립니다.</p>
+                <h2 id="consult-modal-title">VIP 맞춤 상담</h2><p>원하는 일정과 서비스를 남겨주시면 취향과 예산에 맞춰 안내해 드립니다.</p>
                 <div className="form-grid">
                   <label>이름<input name="name" autoComplete="name" required placeholder="이름을 입력해주세요" /></label>
                   <label>연락처<input name="tel" type="tel" autoComplete="tel" required placeholder="010-0000-0000" /></label>
