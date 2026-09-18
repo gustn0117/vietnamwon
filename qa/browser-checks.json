@@ -1,0 +1,38 @@
+{
+  "metrics": {
+    "innerWidth": 390,
+    "innerHeight": 844,
+    "clientWidth": 390,
+    "scrollWidth": 390,
+    "scrollHeight": 4137
+  },
+  "tests": [
+    {
+      "name": "mobile menu",
+      "passed": true
+    },
+    {
+      "name": "category detail modal",
+      "passed": true
+    },
+    {
+      "name": "consult form opens",
+      "passed": true
+    },
+    {
+      "name": "consult success state",
+      "passed": true
+    },
+    {
+      "name": "search filters categories",
+      "passed": true,
+      "details": {
+        "status": "“호텔” 검색 결과 1개\n검색 초기화",
+        "cards": 1
+      }
+    }
+  ],
+  "consoleMessages": [],
+  "exceptions": 0,
+  "logErrors": []
+}
