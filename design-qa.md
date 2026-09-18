@@ -1,67 +1,89 @@
-# Design QA — 베트남원
+# Design QA — Midnight Concierge redesign
+
+## Comparison target
+
+- Source visual truth: `references/midnight-concierge-selected.png`
+- Final implementation: `qa/implementation-dark-desktop-v2.png`
+- Responsive evidence: `qa/implementation-dark-mobile-v1.png`
+- Desktop viewport: 1536 × 1024 CSS px, device scale factor 1
+- Source pixels: 1536 × 1024
+- Implementation pixels: 1536 × 1024
+- Density normalization: none required; source and implementation are equal-size 1× captures
+- State: home route, page top, default navigation state
 
 ## Evidence
 
-- Source visual truth: `references/option-1.png`
-- Final desktop implementation: `qa/implementation-desktop-final.png`
-- Final mobile implementation: `qa/implementation-mobile-final.png`
-- Full-view comparison: `qa/compare-desktop-final.png`
-- Focused header/hero comparison: `qa/compare-focus-header-hero.png`
-- Focused category/trust comparison: `qa/compare-focus-categories.png`
-- Interaction captures: `qa/interaction-mobile-menu.png`, `qa/interaction-category-modal.png`, `qa/interaction-consult-success.png`
-- Browser test log: `qa/browser-checks.json`
+- Full-view side-by-side comparison: `qa/compare-dark-desktop-v2.png`
+- Focused header/hero/service comparison: `qa/compare-dark-header-hero-v2.png`
+- Earlier comparison: `qa/compare-dark-desktop-v1.png`
+- Mobile menu: `qa/interaction-dark-mobile-menu.png`
+- Service detail: `qa/interaction-dark-service-modal.png`
+- Consultation success: `qa/interaction-dark-consult-success.png`
+- Browser assertions: `qa/browser-checks-dark.json`
 
-## Normalization
-
-- Desktop source pixels: 1159 × 1356.
-- Desktop implementation pixels: 1159 × 1356.
-- Desktop CSS viewport: 1159 × 1356; device scale factor 1.
-- Mobile implementation pixels: 390 × 844.
-- Mobile CSS viewport: 390 × 844; device scale factor 1.
-- State: signed-out home page, default search state, no modal open for the primary comparison.
-- The source and implementation are compared at equal pixel density without browser chrome or device frames.
+The focused comparison was required because the supplied logo, Korean display type, header control density, hero crop, and six service cards are too small to judge reliably in the full-page pair alone.
 
 ## Findings
 
-- No actionable P0, P1, or P2 findings remain.
-- Fonts and typography: local Pretendard Variable produces the intended strong Korean sans-serif hierarchy. Headline weights, line height, wrapping, and small UI text remain readable at both tested viewports.
-- Spacing and layout rhythm: header, hero, discovery heading, two-row category grid, trust strip, and consultation banner follow the source order and now occupy comparable proportions. Mobile has no horizontal overflow (`scrollWidth` equals `clientWidth`, 390px).
-- Colors and visual tokens: deep navy, white, travel blue, and restrained champagne-gold map closely to the source. Text and CTA contrast remain clear.
-- Image quality and asset fidelity: every visible image slot uses a dedicated locally stored generated asset with matching premium Vietnam travel art direction. WebP delivery preserves sharpness while reducing transfer size. No placeholder imagery, CSS drawings, handmade SVGs, or hotlinked assets are used.
-- Copy and content: the site consistently uses the 베트남원 identity and coherent Korean travel copy. Primary actions remain focused on discovery and consultation.
-- Icons: Phosphor icons provide a consistent family for search, account, navigation, trust, and consultation controls.
-- Accessibility: semantic buttons/forms, labels, alt text, visible focus indicators, Escape-to-close behavior, reduced-motion support, and practical mobile targets are present.
+No actionable P0, P1, or P2 findings remain.
 
-## Browser Verification
+- Fonts and typography: Pretendard variable is used for Korean UI and display copy, with Georgia limited to the small italic signature. Headline scale, line-height, hierarchy, and wrapping closely match the selected visual at 1536 px. Mobile wrapping remains readable without truncation.
+- Spacing and layout rhythm: the 33 px utility bar, 76 px main header, 462 px hero, six-card strip, and beginning of the tailored-experience section align closely with the reference's vertical landmarks. Grid margins and gaps preserve the same dense premium rhythm without overlap.
+- Colors and visual tokens: near-black and charcoal surfaces, warm ivory copy, and restrained metallic gold map consistently to the selected concept. Focus states retain visible gold contrast.
+- Image quality and asset fidelity: all visible hero, casino, concierge, nightlife, golf, hotel, vehicle, and private-VIP imagery is supplied or individually generated at the required crop. No placeholder, CSS drawing, inline SVG illustration, or emoji substitutes remain.
+- Copy and content: the primary nightlife/VIP promise, service taxonomy, trust cues, and consultation path match the selected direction. Korean copy is coherent and avoids explicit imagery or language.
+- Icons: all interface icons use the existing Phosphor icon family with consistent duotone/solid treatments and optical size.
+- Responsiveness: the 390 × 844 check has `scrollWidth === innerWidth === 390`; navigation moves to a drawer and service cards become a swipeable rail. No clipping or persistent-control overflow was found.
+- Accessibility: semantic buttons/forms, visible focus, labels, escape-to-close, alt text, reduced-motion handling, and mobile tap targets are present. Modal opening locks body scroll.
 
-Tested in the Chrome production preview at `http://127.0.0.1:4173/`:
+## Comparison history
 
-- Mobile menu opens.
-- Category detail modal opens.
-- Consultation form opens and reaches its success state.
-- Search filters the category grid to the matching result.
-- Browser console errors: none.
-- Runtime exceptions: none.
-- Browser log errors: none.
+### Pass 1
 
-## Comparison History
+Evidence: `qa/compare-dark-desktop-v1.png`
 
-### Iteration 1
+- [P1] The desktop header clipped the supplied vertical ONE AGENCY logo down to the emblem, omitting its wordmark.
+- [P2] The vehicle service and lower experience card showed a missing asset while the final photo was still being produced.
+- [P3] The browser requested a missing favicon and logged one 404.
 
-- Earlier finding [P1]: desktop hero and card regions were too tall, so the consultation banner did not enter the same 1159 × 1356 crop as the source.
-- Earlier finding [P1]: the initial narrow layout allowed the long hero title and header controls to crowd the right edge.
-- Fixes: reduced header and hero proportions, tightened card height and section spacing, added an intentional mobile headline break, and used a zero-minimum mobile grid track with a compact search control.
-- Post-fix evidence: `qa/compare-desktop-v2.png` and `qa/implementation-mobile-v3.png`.
+Fixes made:
 
-### Iteration 2
+- Reduced the header logo render width so the complete supplied lockup is visible without cropping.
+- Added the final private vehicle asset and used it in both the service card and consultation banner.
+- Added `app/favicon.ico` from the supplied logo.
 
-- Earlier finding [P2]: desktop discovery spacing was still looser than the source, placing the consultation banner lower than intended.
-- Fixes: tightened hero height, discovery padding, grid margin, and trust-strip spacing.
-- Post-fix evidence: `qa/compare-desktop-final.png`, `qa/compare-focus-header-hero.png`, and `qa/compare-focus-categories.png`.
+### Pass 2
 
-## Follow-up Polish
+Evidence: `qa/compare-dark-desktop-v2.png` and `qa/compare-dark-header-hero-v2.png`
 
-- [P3] The implementation uses an original open-source palm/island icon with an HTML wordmark instead of copying the generated mock logo exactly.
-- [P3] The source mock shows an additional 회원가입 label; the implementation keeps the header focused on the working consultation journey until real authentication is added.
+- The supplied logo is fully visible, all six service cards contain finished imagery, and the browser console/network check reports no errors.
+- No P0, P1, or P2 visual or functional differences remain.
+
+## Primary interactions tested
+
+- Mobile menu opens, traps the page behind it, and closes.
+- Service card opens the correct casino detail modal and body scrolling is locked.
+- Header search for `카지노` returns one matching card and resets correctly.
+- VIP consultation modal accepts required fields and reaches the success state.
+- Escape-to-close behavior is implemented for drawer and modals.
+- Final browser console, runtime exception, and HTTP ≥400 check: zero errors.
+
+## Intentional/acceptable differences
+
+- The generated concept depicted a horizontal AI-rendered brand lockup. The implementation uses the user's exact supplied vertical ONE AGENCY logo instead, which takes precedence over the mock's altered lockup.
+- The final hero uses an adult male guest viewed from behind rather than the mock's female guest, while preserving the same skyline, private-lounge composition, dark negative space, and premium nightlife mood.
+
+## Follow-up polish
+
+- [P3] A future official horizontal/vector ONE AGENCY lockup would allow the desktop header brand to read larger while keeping the current 76 px header height.
+
+## Implementation checklist
+
+- [x] Supplied logo used in header, drawer, footer, and favicon
+- [x] Dark nightlife-first visual system implemented
+- [x] Individually generated premium imagery placed in every visible asset slot
+- [x] Desktop and mobile layouts verified
+- [x] Search, navigation, details, and consultation flow verified
+- [x] Lint, typecheck, and production build passed
 
 final result: passed
