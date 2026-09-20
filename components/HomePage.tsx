@@ -5,6 +5,7 @@ import {
   ArrowRight,
   Buildings,
   Car,
+  CaretDown,
   CaretRight,
   ChatsCircle,
   CheckCircle,
@@ -27,9 +28,10 @@ type Service = {
   english: string;
   subtitle: string;
   description: string;
-  image: string;
+  image?: string;
   icon: typeof Spade;
   position?: string;
+  note?: string;
 };
 
 const services: Service[] = [
@@ -40,14 +42,6 @@ const services: Service[] = [
     description: "검증된 주요 카지노 안내부터 전용 이동, 멤버십 혜택까지 한 번에 준비합니다.",
     image: "/images/dark-casino.png",
     icon: Spade,
-  },
-  {
-    title: "VIP 에스코트",
-    english: "VIP Concierge",
-    subtitle: "특별한 만남과 경험",
-    description: "취향과 일정에 맞춰 현지 전문 컨시어지가 프라이빗하게 동행합니다.",
-    image: "/images/dark-vip-service.png",
-    icon: Crown,
   },
   {
     title: "밤문화",
@@ -84,14 +78,47 @@ const services: Service[] = [
   },
 ];
 
-const experiences = [
-  { service: services[0], title: "프리미엄 카지노", copy: "검증된 카지노와 특별한 멤버십 혜택" },
-  { service: services[2], title: "럭셔리 나이트라이프", copy: "베트남의 가장 핫한 순간을 당신답게" },
-  { service: services[1], image: "/images/dark-private-vip.png", title: "프라이빗 VIP 서비스", copy: "1:1 맞춤 에스코트와 전담 컨시어지" },
-  { service: services[5], title: "프리미엄 차량 서비스", copy: "공항 픽업부터 전 일정 전용 차량" },
+const casinoCities: Service[] = [
+  {
+    title: "나트랑 카지노",
+    english: "Nha Trang",
+    subtitle: "해변 리조트와 가까운 카지노",
+    description: "리조트 단지 안 카지노를 중심으로, 해변 일정과 저녁 게임을 하루에 이어서 안내합니다.",
+    icon: Spade,
+    note: "나트랑 현장 사진",
+  },
+  {
+    title: "다낭 카지노",
+    english: "Da Nang",
+    subtitle: "짧은 이동, 골프와 함께",
+    description: "시내와 해변 리조트가 가까워 이동이 짧습니다. 낮 라운딩과 저녁 게임을 묶는 일정에 잘 맞습니다.",
+    icon: Spade,
+    note: "다낭 현장 사진",
+  },
+  {
+    title: "하노이 카지노",
+    english: "Ha Noi",
+    subtitle: "격식 있는 VIP 룸 중심",
+    description: "조용하고 격식 있는 VIP 룸을 중심으로, 시내 호텔과 전용 차량까지 함께 준비합니다.",
+    icon: Spade,
+    note: "하노이 현장 사진",
+  },
 ];
 
-const navItems = ["카지노", "VIP 에스코트", "밤문화", "골프", "호텔", "차량"];
+const experiences: { service: Service; image: string; title: string; copy: string }[] = [
+  { service: services[0], image: "/images/dark-casino.png", title: "프리미엄 카지노", copy: "검증된 카지노와 특별한 멤버십 혜택" },
+  { service: services[1], image: "/images/dark-nightlife.png", title: "럭셔리 나이트라이프", copy: "베트남의 가장 핫한 순간을 당신답게" },
+  { service: services[3], image: "/images/dark-private-vip.png", title: "프리미엄 호텔 & 풀빌라", copy: "밤의 동선에 맞춘 검증된 숙소" },
+  { service: services[4], image: "/images/dark-vehicle.png", title: "프리미엄 차량 서비스", copy: "공항 픽업부터 전 일정 전용 차량" },
+];
+
+const navItems: { title: string; children?: Service[] }[] = [
+  { title: "카지노", children: casinoCities },
+  { title: "밤문화" },
+  { title: "골프" },
+  { title: "호텔" },
+  { title: "차량" },
+];
 
 export function HomePage() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -105,7 +132,7 @@ export function HomePage() {
   const filteredServices = useMemo(() => {
     const needle = query.trim().toLowerCase();
     if (!needle) return services;
-    return services.filter((service) =>
+    return [...services, ...casinoCities].filter((service) =>
       `${service.title} ${service.english} ${service.subtitle} ${service.description}`
         .toLowerCase()
         .includes(needle),
@@ -145,7 +172,7 @@ export function HomePage() {
   };
 
   const selectByTitle = (title: string) => {
-    const service = services.find((item) => item.title === title);
+    const service = [...services, ...casinoCities].find((item) => item.title === title);
     if (service) setSelected(service);
   };
 
@@ -173,9 +200,21 @@ export function HomePage() {
           </a>
           <nav className="desktop-nav" aria-label="주요 메뉴">
             {navItems.map((item) => (
-              <button type="button" key={item} onClick={() => selectByTitle(item)}>{item}</button>
+              <div className="nav-item" key={item.title}>
+                <button type="button" onClick={() => selectByTitle(item.title)}>
+                  {item.title}
+                  {item.children && <CaretDown aria-hidden="true" />}
+                </button>
+                {item.children && (
+                  <div className="nav-sub">
+                    {item.children.map((child) => (
+                      <button type="button" key={child.title} onClick={() => setSelected(child)}>{child.title}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
-            <a href="#experience">여행 TIP</a>
+            <div className="nav-item"><a href="#experience">여행 TIP</a></div>
           </nav>
           <div className="header-actions">
             <form className="header-search" role="search" onSubmit={handleSearch}>
@@ -211,10 +250,18 @@ export function HomePage() {
             </div>
             <nav aria-label="모바일 주요 메뉴">
               {navItems.map((item) => (
-                <button type="button" key={item} onClick={() => {
-                  setMobileOpen(false);
-                  selectByTitle(item);
-                }}>{item} <CaretRight /></button>
+                <div key={item.title}>
+                  <button type="button" onClick={() => {
+                    setMobileOpen(false);
+                    selectByTitle(item.title);
+                  }}>{item.title} <CaretRight /></button>
+                  {item.children?.map((child) => (
+                    <button className="drawer-sub" type="button" key={child.title} onClick={() => {
+                      setMobileOpen(false);
+                      setSelected(child);
+                    }}>{child.title} <CaretRight /></button>
+                  ))}
+                </div>
               ))}
               <a href="#experience" onClick={() => setMobileOpen(false)}>여행 TIP <CaretRight /></a>
             </nav>
@@ -259,7 +306,11 @@ export function HomePage() {
                 const Icon = service.icon;
                 return (
                   <button className="service-card" type="button" key={service.title} onClick={() => setSelected(service)}>
-                    <Image src={service.image} alt="" fill sizes="(max-width: 760px) 70vw, (max-width: 1080px) 34vw, 18vw" style={{ objectPosition: service.position }} />
+                    {service.image ? (
+                      <Image src={service.image} alt="" fill sizes="(max-width: 760px) 70vw, (max-width: 1080px) 34vw, 20vw" style={{ objectPosition: service.position }} />
+                    ) : (
+                      <span className="hatch" aria-hidden="true"><em>{service.note}</em></span>
+                    )}
                     <span className="service-overlay" />
                     <span className="service-copy"><Icon weight="duotone" /><span><strong>{service.title}</strong><small>{service.subtitle}</small></span></span>
                     <span className="service-arrow"><ArrowRight /></span>
@@ -286,7 +337,7 @@ export function HomePage() {
           <div className="experience-grid">
             {experiences.map((item) => (
               <button type="button" className="experience-card" key={item.title} onClick={() => setSelected(item.service)}>
-                <Image src={item.image ?? item.service.image} alt="" fill sizes="(max-width: 760px) 100vw, 50vw" style={{ objectPosition: item.service.position }} />
+                <Image src={item.image} alt="" fill sizes="(max-width: 760px) 100vw, 50vw" style={{ objectPosition: item.service.position }} />
                 <span className="experience-overlay" /><span><strong>{item.title}</strong><small>{item.copy}</small></span>
               </button>
             ))}
@@ -330,7 +381,13 @@ export function HomePage() {
           <button className="modal-backdrop" aria-label="상세 정보 닫기" onClick={() => setSelected(null)} />
           <section className="service-modal">
             <button ref={closeButtonRef} className="modal-close" type="button" onClick={() => setSelected(null)} aria-label="닫기"><X /></button>
-            <div className="modal-image"><Image src={selected.image} alt={`${selected.title} 이미지`} fill sizes="(max-width: 1080px) 100vw, 620px" /></div>
+            <div className="modal-image">
+              {selected.image ? (
+                <Image src={selected.image} alt={`${selected.title} 이미지`} fill sizes="(max-width: 1080px) 100vw, 620px" />
+              ) : (
+                <span className="hatch"><em>{selected.note} 자리</em></span>
+              )}
+            </div>
             <div className="modal-copy">
               <h2 id="service-modal-title">{selected.title}</h2><p>{selected.description}</p>
               <ul><li><CheckCircle weight="fill" /> 일정과 예산에 맞춘 1:1 추천</li><li><CheckCircle weight="fill" /> 현지 이동과 예약까지 한 번에</li><li><CheckCircle weight="fill" /> 상담 내용과 일정은 철저히 비공개</li></ul>
@@ -353,7 +410,7 @@ export function HomePage() {
                 <div className="form-grid">
                   <label>이름<input name="name" autoComplete="name" required placeholder="이름을 입력해주세요" /></label>
                   <label>연락처<input name="tel" type="tel" autoComplete="tel" required placeholder="010-0000-0000" /></label>
-                  <label className="form-wide">관심 서비스<select name="service" defaultValue=""><option value="" disabled>서비스를 선택해주세요</option>{services.map((service) => <option key={service.title}>{service.title}</option>)}</select></label>
+                  <label className="form-wide">관심 서비스<select name="service" defaultValue=""><option value="" disabled>서비스를 선택해주세요</option>{[...services, ...casinoCities].map((service) => <option key={service.title}>{service.title}</option>)}</select></label>
                   <label className="form-wide">상담 내용<textarea name="message" rows={4} placeholder="인원, 일정, 지역, 원하는 분위기를 자유롭게 적어주세요" /></label>
                 </div>
                 <label className="privacy-check"><input type="checkbox" required /><span>상담을 위한 개인정보 수집 및 이용에 동의합니다.</span></label>
