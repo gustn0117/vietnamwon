@@ -97,6 +97,7 @@ const navItems: { title: string; children?: { title: string; href: string }[] }[
 
 export function HomePage() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [searched, setSearched] = useState(false);
   const [selected, setSelected] = useState<Service | null>(null);
@@ -226,15 +227,29 @@ export function HomePage() {
             <nav aria-label="모바일 주요 메뉴">
               {navItems.map((item) => (
                 <div key={item.title}>
-                  <button type="button" onClick={() => {
-                    setMobileOpen(false);
-                    selectByTitle(item.title);
-                  }}>{item.title} <CaretRight /></button>
-                  {item.children?.map((child) => (
-                    <Link className="drawer-sub" key={child.title} href={child.href} onClick={() => setMobileOpen(false)}>
-                      {child.title} <CaretRight />
-                    </Link>
-                  ))}
+                  <button
+                    type="button"
+                    aria-expanded={item.children ? openMenu === item.title : undefined}
+                    onClick={() => {
+                      if (item.children) {
+                        setOpenMenu(openMenu === item.title ? null : item.title);
+                        return;
+                      }
+                      setMobileOpen(false);
+                      selectByTitle(item.title);
+                    }}
+                  >
+                    {item.title} {item.children ? <CaretDown className={openMenu === item.title ? "is-open" : ""} /> : <CaretRight />}
+                  </button>
+                  {item.children && openMenu === item.title && (
+                    <div className="drawer-subs">
+                      {item.children.map((child) => (
+                        <Link className="drawer-sub" key={child.title} href={child.href} onClick={() => setMobileOpen(false)}>
+                          {child.title} <CaretRight />
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
               <a href="#experience" onClick={() => setMobileOpen(false)}>여행 TIP <CaretRight /></a>

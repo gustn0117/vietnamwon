@@ -595,7 +595,10 @@ button, a, input, select, textarea { outline-offset: 3px; }
 .mobile-drawer nav a { width: 100%; }
 .mobile-drawer nav button,
 .mobile-drawer nav a { min-height: 64px; gap: 12px; display: flex; align-items: center; justify-content: space-between; padding: 0; color: rgb(255 255 255 / 88%); background: transparent; border-bottom: 1px solid rgb(255 255 255 / 9%); font-size: 19px; font-weight: 700; text-align: left; cursor: pointer; }
-.mobile-drawer nav .drawer-sub { min-height: 56px; padding-left: 18px; color: rgb(255 255 255 / 62%); font-size: 16px; font-weight: 600; }
+.mobile-drawer nav .drawer-subs { background: rgb(255 255 255 / 4%); border-bottom: 1px solid rgb(255 255 255 / 9%); }
+.mobile-drawer nav .drawer-sub { min-height: 56px; padding-inline: 18px; color: rgb(255 255 255 / 70%); border-bottom: 0; font-size: 16px; font-weight: 600; }
+.mobile-drawer nav .drawer-sub + .drawer-sub { border-top: 1px solid rgb(255 255 255 / 7%); }
+.mobile-drawer nav svg.is-open { transform: rotate(180deg); }
 .mobile-drawer nav .drawer-sub svg { width: 18px; height: 18px; }
 .drawer-cta { width: 100%; margin-top: 32px; }
 

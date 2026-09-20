@@ -16,6 +16,7 @@ const sections = [
 
 export function PageHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [casinoOpen, setCasinoOpen] = useState(false);
 
   return (
     <>
@@ -69,16 +70,25 @@ export function PageHeader() {
               <Image src="/images/one-agency-logo.png" alt="ONE AGENCY" width={138} height={118} />
               <button type="button" onClick={() => setMobileOpen(false)} aria-label="메뉴 닫기"><X size={25} /></button>
             </div>
-            <nav aria-label="모바일 주요 메뉴" onClick={() => setMobileOpen(false)}>
+            <nav aria-label="모바일 주요 메뉴">
               <div>
-                <Link href="/casino">카지노 <CaretRight /></Link>
-                {casinoCities.map((city) => (
-                  <Link className="drawer-sub" key={city.slug} href={`/casino/${city.slug}`}>{city.heading} <CaretRight /></Link>
-                ))}
+                <button type="button" aria-expanded={casinoOpen} onClick={() => setCasinoOpen((open) => !open)}>
+                  카지노 <CaretDown className={casinoOpen ? "is-open" : ""} />
+                </button>
+                {casinoOpen && (
+                  <div className="drawer-subs">
+                    <Link className="drawer-sub" href="/casino" onClick={() => setMobileOpen(false)}>카지노 전체 <CaretRight /></Link>
+                    {casinoCities.map((city) => (
+                      <Link className="drawer-sub" key={city.slug} href={`/casino/${city.slug}`} onClick={() => setMobileOpen(false)}>
+                        {city.heading} <CaretRight />
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
               {sections.map((item) => (
                 <div key={item.title}>
-                  <Link href={item.href}>{item.title} <CaretRight /></Link>
+                  <Link href={item.href} onClick={() => setMobileOpen(false)}>{item.title} <CaretRight /></Link>
                 </div>
               ))}
             </nav>
