@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { PageFooter } from "@/components/PageFooter";
 import { PageHeader } from "@/components/PageHeader";
-import { casinoCities } from "@/lib/casino";
+import { casinoBoards } from "@/lib/boards";
 import { listPosts } from "@/lib/posts";
 
 export const metadata: Metadata = {
@@ -28,10 +28,10 @@ export default async function CasinoIndexPage() {
         </section>
 
         <section className="shell city-index">
-          {casinoCities.map((city) => {
-            const count = posts.filter((post) => post.city === city.slug).length;
+          {casinoBoards.map((city) => {
+            const count = posts.filter((post) => post.category === city.slug).length;
             return (
-              <Link className="city-card" key={city.slug} href={`/casino/${city.slug}`}>
+              <Link className="city-card" key={city.slug} href={city.href}>
                 <div>
                   <h2>{city.heading}</h2>
                   <p>{city.description}</p>

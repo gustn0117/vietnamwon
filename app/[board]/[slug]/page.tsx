@@ -4,11 +4,11 @@ import { PostView } from "@/components/PostView";
 import { findBoard } from "@/lib/boards";
 import { getPost } from "@/lib/posts";
 
-type Props = { params: Promise<{ city: string; slug: string }> };
+type Props = { params: Promise<{ board: string; slug: string }> };
 
 async function load(params: Props["params"]) {
-  const { city, slug } = await params;
-  const board = findBoard(city, "casino");
+  const { board: boardSlug, slug } = await params;
+  const board = findBoard(boardSlug, "main");
   if (!board) return null;
   const post = await getPost(board.slug, slug);
   return post ? { board, post } : null;
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export const dynamic = "force-dynamic";
 
-export default async function CasinoPostPage({ params }: Props) {
+export default async function BoardPostPage({ params }: Props) {
   const data = await load(params);
   if (!data) notFound();
   return <PostView board={data.board} post={data.post} />;

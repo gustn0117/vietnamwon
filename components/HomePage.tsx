@@ -23,7 +23,7 @@ import {
 } from "@phosphor-icons/react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ContactButtons, ContactLinks, FloatingContact } from "@/components/ContactButtons";
-import { casinoCities } from "@/lib/casino";
+import { casinoBoards, mainBoards } from "@/lib/boards";
 
 type Service = {
   title: string;
@@ -34,6 +34,7 @@ type Service = {
   icon: typeof Spade;
   position?: string;
   note?: string;
+  board?: string;
 };
 
 const services: Service[] = [
@@ -52,6 +53,7 @@ const services: Service[] = [
     description: "루프톱 라운지와 클럽, 프라이빗 룸까지 안전하고 세련되게 큐레이션합니다.",
     image: "/images/dark-nightlife.png",
     icon: Wine,
+    board: "nightlife",
   },
   {
     title: "골프",
@@ -60,6 +62,7 @@ const services: Service[] = [
     description: "티오프 예약과 차량, 식사까지 흐름이 끊기지 않는 프리미엄 라운딩을 만듭니다.",
     image: "/images/dark-golf.png",
     icon: Golf,
+    board: "golf",
   },
   {
     title: "호텔",
@@ -68,6 +71,7 @@ const services: Service[] = [
     description: "밤의 동선과 여행 목적에 맞는 검증된 호텔과 풀빌라를 제안합니다.",
     image: "/images/dark-hotel.png",
     icon: Buildings,
+    board: "hotel",
   },
   {
     title: "차량",
@@ -77,6 +81,7 @@ const services: Service[] = [
     image: "/images/dark-vehicle.png",
     icon: Car,
     position: "center 58%",
+    board: "vehicle",
   },
 ];
 
@@ -87,13 +92,7 @@ const experiences: { service: Service; image: string; title: string; copy: strin
   { service: services[4], image: "/images/dark-vehicle.png", title: "프리미엄 차량 서비스", copy: "공항 픽업부터 전 일정 전용 차량" },
 ];
 
-const navItems: { title: string; children?: { title: string; href: string }[] }[] = [
-  { title: "카지노", children: casinoCities.map((city) => ({ title: city.heading, href: `/casino/${city.slug}` })) },
-  { title: "밤문화" },
-  { title: "골프" },
-  { title: "호텔" },
-  { title: "차량" },
-];
+const casinoLinks = casinoBoards.map((board) => ({ title: board.heading, href: board.href }));
 
 export function HomePage() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -165,22 +164,21 @@ export function HomePage() {
             <Image src="/images/one-agency-logo.png" alt="ONE AGENCY Casino Marketing & VIP Services" width={174} height={149} priority />
           </a>
           <nav className="desktop-nav" aria-label="주요 메뉴">
-            {navItems.map((item) => (
-              <div className="nav-item" key={item.title}>
-                <button type="button" onClick={() => selectByTitle(item.title)}>
-                  {item.title}
-                  {item.children && <CaretDown aria-hidden="true" />}
-                </button>
-                {item.children && (
-                  <div className="nav-sub">
-                    {item.children.map((child) => (
-                      <Link key={child.title} href={child.href}>{child.title}</Link>
-                    ))}
-                  </div>
-                )}
+            <div className="nav-item">
+              <button type="button" onClick={() => selectByTitle("카지노")}>
+                카지노 <CaretDown aria-hidden="true" />
+              </button>
+              <div className="nav-sub">
+                {casinoLinks.map((link) => (
+                  <Link key={link.href} href={link.href}>{link.title}</Link>
+                ))}
+              </div>
+            </div>
+            {mainBoards.map((board) => (
+              <div className="nav-item" key={board.slug}>
+                <Link href={board.href}>{board.name}</Link>
               </div>
             ))}
-            <div className="nav-item"><a href="#experience">여행 TIP</a></div>
           </nav>
           <div className="header-actions">
             <form className="header-search" role="search" onSubmit={handleSearch}>
@@ -213,34 +211,25 @@ export function HomePage() {
               <button type="button" onClick={() => setMobileOpen(false)} aria-label="메뉴 닫기"><X size={25} /></button>
             </div>
             <nav aria-label="모바일 주요 메뉴">
-              {navItems.map((item) => (
-                <div key={item.title}>
-                  <button
-                    type="button"
-                    aria-expanded={item.children ? openMenu === item.title : undefined}
-                    onClick={() => {
-                      if (item.children) {
-                        setOpenMenu(openMenu === item.title ? null : item.title);
-                        return;
-                      }
-                      setMobileOpen(false);
-                      selectByTitle(item.title);
-                    }}
-                  >
-                    {item.title} {item.children ? <CaretDown className={openMenu === item.title ? "is-open" : ""} /> : <CaretRight />}
-                  </button>
-                  {item.children && openMenu === item.title && (
-                    <div className="drawer-subs">
-                      {item.children.map((child) => (
-                        <Link className="drawer-sub" key={child.title} href={child.href} onClick={() => setMobileOpen(false)}>
-                          {child.title} <CaretRight />
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+              <div>
+                <button type="button" aria-expanded={openMenu === "카지노"} onClick={() => setOpenMenu(openMenu === "카지노" ? null : "카지노")}>
+                  카지노 <CaretDown className={openMenu === "카지노" ? "is-open" : ""} />
+                </button>
+                {openMenu === "카지노" && (
+                  <div className="drawer-subs">
+                    {casinoLinks.map((link) => (
+                      <Link className="drawer-sub" key={link.href} href={link.href} onClick={() => setMobileOpen(false)}>
+                        {link.title} <CaretRight />
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {mainBoards.map((board) => (
+                <div key={board.slug}>
+                  <Link href={board.href} onClick={() => setMobileOpen(false)}>{board.name} <CaretRight /></Link>
                 </div>
               ))}
-              <a href="#experience" onClick={() => setMobileOpen(false)}>여행 TIP <CaretRight /></a>
             </nav>
             <ContactButtons className="contact-buttons drawer-contact" onClick={() => setMobileOpen(false)} />
           </aside>
@@ -340,7 +329,7 @@ export function HomePage() {
       <footer className="site-footer">
         <div className="shell footer-grid">
           <div className="footer-brand"><Image src="/images/one-agency-logo.png" alt="ONE AGENCY Casino Marketing & VIP Services" width={174} height={149} /></div>
-          <div className="footer-links"><a href="#services">서비스</a><a href="#experience">ONE AGENCY 경험</a><ContactLinks /></div>
+          <div className="footer-links"><a href="#services">서비스</a><Link href="/casino">카지노 안내</Link><Link href="/travel-tip">여행 TIP</Link></div>
           <div className="footer-legal"><span>이용약관</span><span>개인정보처리방침</span><span>© 2026 ONE AGENCY</span></div>
         </div>
       </footer>
@@ -364,9 +353,14 @@ export function HomePage() {
               <ul><li><CheckCircle weight="fill" /> 일정과 예산에 맞춘 1:1 추천</li><li><CheckCircle weight="fill" /> 현지 이동과 예약까지 한 번에</li><li><CheckCircle weight="fill" /> 상담 내용과 일정은 철저히 비공개</li></ul>
               {selected.title === "카지노" && (
                 <div className="modal-cities">
-                  {casinoCities.map((city) => (
-                    <Link key={city.slug} href={`/casino/${city.slug}`}>{city.heading} <ArrowRight /></Link>
+                  {casinoLinks.map((link) => (
+                    <Link key={link.href} href={link.href}>{link.title} <ArrowRight /></Link>
                   ))}
+                </div>
+              )}
+              {selected.board && (
+                <div className="modal-cities">
+                  <Link href={`/${selected.board}`}>{selected.title} 글 보기 <ArrowRight /></Link>
                 </div>
               )}
               <ContactButtons className="contact-buttons modal-contact" />

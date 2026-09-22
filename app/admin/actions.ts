@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { casinoCities } from "@/lib/casino";
+import { allBoards, findBoard } from "@/lib/boards";
 import { createPost, deletePost, getPostById, updatePost, uploadCover } from "@/lib/posts";
 import { checkPassword, endSession, requireSession, startSession } from "@/lib/session";
 
@@ -17,10 +17,13 @@ function slugify(input: string) {
   return cleaned || `post-${Date.now()}`;
 }
 
-function refresh(city: string, slug?: string) {
+function refresh(category: string, slug?: string) {
+  const board = findBoard(category);
   revalidatePath("/casino");
-  revalidatePath(`/casino/${city}`);
-  if (slug) revalidatePath(`/casino/${city}/${slug}`);
+  if (board) {
+    revalidatePath(board.href);
+    if (slug) revalidatePath(`${board.href}/${slug}`);
+  }
   revalidatePath("/admin");
 }
 
@@ -40,7 +43,7 @@ export async function savePost(_state: FormState, formData: FormData): Promise<F
   await requireSession();
 
   const id = String(formData.get("id") ?? "");
-  const city = String(formData.get("city") ?? "");
+  const category = String(formData.get("category") ?? "");
   const title = String(formData.get("title") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
@@ -50,7 +53,7 @@ export async function savePost(_state: FormState, formData: FormData): Promise<F
   const cover = formData.get("cover");
   const removeCover = formData.get("remove_cover") === "on";
 
-  if (!casinoCities.some((item) => item.slug === city)) return { error: "도시를 선택해주세요." };
+  if (!allBoards.some((item) => item.slug === category)) return { error: "게시판을 선택해주세요." };
   if (!title) return { error: "제목을 입력해주세요." };
 
   let coverUrl: string | null | undefined;
@@ -65,24 +68,24 @@ export async function savePost(_state: FormState, formData: FormData): Promise<F
   }
 
   const slug = slugify(slugInput || title);
-  const values = { city, title, body, excerpt, slug, published, sort_order: sortOrder };
+  const values = { category, title, body, excerpt, slug, published, sort_order: sortOrder };
 
   try {
     if (id) {
       const existing = await getPostById(id);
       if (!existing) return { error: "글을 찾을 수 없습니다." };
       await updatePost(id, { ...values, ...(coverUrl !== undefined ? { cover_url: coverUrl } : {}) });
-      if (existing.city !== city || existing.slug !== slug) refresh(existing.city, existing.slug);
+      if (existing.category !== category || existing.slug !== slug) refresh(existing.category, existing.slug);
     } else {
       await createPost({ ...values, cover_url: coverUrl ?? null });
     }
   } catch (error) {
     const message = String(error);
-    if (message.includes("duplicate key")) return { error: "같은 주소(slug)의 글이 이미 있습니다." };
+    if (message.includes("duplicate key")) return { error: "이 게시판에 같은 주소(slug)의 글이 이미 있습니다." };
     return { error: "저장하지 못했습니다. 잠시 후 다시 시도해주세요." };
   }
 
-  refresh(city, slug);
+  refresh(category, slug);
   redirect("/admin");
 }
 
@@ -92,6 +95,6 @@ export async function removePost(formData: FormData) {
   const post = await getPostById(id);
   if (!post) return;
   await deletePost(id);
-  refresh(post.city, post.slug);
+  refresh(post.category, post.slug);
   redirect("/admin");
 }

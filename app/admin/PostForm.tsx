@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
-import { casinoCities } from "@/lib/casino";
+import { casinoBoards, mainBoards } from "@/lib/boards";
 import type { Post } from "@/lib/posts";
 import { savePost, type FormState } from "./actions";
 
-export function PostForm({ post }: { post?: Post }) {
+export function PostForm({ post, defaultCategory }: { post?: Post; defaultCategory?: string }) {
   const [state, action, pending] = useActionState<FormState, FormData>(savePost, {});
   const [preview, setPreview] = useState<string | null>(post?.cover_url ?? null);
 
@@ -15,11 +15,18 @@ export function PostForm({ post }: { post?: Post }) {
       {post && <input type="hidden" name="id" value={post.id} />}
 
       <label>
-        도시
-        <select name="city" defaultValue={post?.city ?? casinoCities[0].slug} required>
-          {casinoCities.map((city) => (
-            <option key={city.slug} value={city.slug}>{city.heading}</option>
-          ))}
+        게시판
+        <select name="category" defaultValue={post?.category ?? defaultCategory ?? casinoBoards[0].slug} required>
+          <optgroup label="카지노">
+            {casinoBoards.map((board) => (
+              <option key={board.slug} value={board.slug}>{board.heading}</option>
+            ))}
+          </optgroup>
+          <optgroup label="그 외">
+            {mainBoards.map((board) => (
+              <option key={board.slug} value={board.slug}>{board.heading}</option>
+            ))}
+          </optgroup>
         </select>
       </label>
 
@@ -35,7 +42,7 @@ export function PostForm({ post }: { post?: Post }) {
 
       <label>
         본문
-        <textarea name="body" rows={16} defaultValue={post?.body} placeholder="카지노 소개, 위치, 이용 방법 등을 적어주세요" />
+        <textarea name="body" rows={16} defaultValue={post?.body} placeholder="소개, 위치, 이용 방법 등을 자유롭게 적어주세요" />
       </label>
 
       <label>

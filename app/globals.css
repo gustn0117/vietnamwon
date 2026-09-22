@@ -830,6 +830,8 @@ button, a, input, select, textarea { outline-offset: 3px; }
 .admin-group { margin-bottom: 48px; }
 .admin-group h2 { display: flex; align-items: baseline; gap: 12px; margin: 0 0 16px; font-size: 22px; letter-spacing: -.035em; }
 .admin-group h2 span { color: var(--muted); font-size: 15px; font-weight: 500; }
+.admin-group h2 .admin-add { margin-left: auto; color: var(--gold-light); font-size: 15px; font-weight: 700; letter-spacing: 0; }
+.admin-group h2 .admin-add:hover { text-decoration: underline; text-underline-offset: 5px; }
 .admin-empty { margin: 0; padding: 28px; color: var(--muted); background: var(--panel); border: 1px solid var(--line-white); font-size: 16px; }
 
 .admin-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }

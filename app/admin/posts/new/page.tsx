@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function NewPostPage() {
+export default async function NewPostPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
   if (!(await isSignedIn())) redirect("/admin");
 
   return (
@@ -19,7 +19,7 @@ export default async function NewPostPage() {
           <h1>새 글 쓰기</h1>
           <Link className="outline-button" href="/admin">목록으로</Link>
         </header>
-        <PostForm />
+        <PostForm defaultCategory={(await searchParams).category} />
       </div>
     </main>
   );

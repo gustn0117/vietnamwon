@@ -5,15 +5,7 @@ import Link from "next/link";
 import { CaretDown, CaretRight, List, X } from "@phosphor-icons/react";
 import { ContactButtons, ContactLinks } from "@/components/ContactButtons";
 import { useState } from "react";
-import { casinoCities } from "@/lib/casino";
-
-const sections = [
-  { title: "밤문화", href: "/#services" },
-  { title: "골프", href: "/#services" },
-  { title: "호텔", href: "/#services" },
-  { title: "차량", href: "/#services" },
-  { title: "여행 TIP", href: "/#experience" },
-];
+import { casinoBoards, mainBoards } from "@/lib/boards";
 
 export function PageHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -41,14 +33,14 @@ export function PageHeader() {
             <div className="nav-item">
               <Link href="/casino">카지노 <CaretDown aria-hidden="true" /></Link>
               <div className="nav-sub">
-                {casinoCities.map((city) => (
-                  <Link key={city.slug} href={`/casino/${city.slug}`}>{city.heading}</Link>
+                {casinoBoards.map((board) => (
+                  <Link key={board.slug} href={board.href}>{board.heading}</Link>
                 ))}
               </div>
             </div>
-            {sections.map((item) => (
-              <div className="nav-item" key={item.title}>
-                <Link href={item.href}>{item.title}</Link>
+            {mainBoards.map((board) => (
+              <div className="nav-item" key={board.slug}>
+                <Link href={board.href}>{board.name}</Link>
               </div>
             ))}
           </nav>
@@ -77,17 +69,17 @@ export function PageHeader() {
                 {casinoOpen && (
                   <div className="drawer-subs">
                     <Link className="drawer-sub" href="/casino" onClick={() => setMobileOpen(false)}>카지노 전체 <CaretRight /></Link>
-                    {casinoCities.map((city) => (
-                      <Link className="drawer-sub" key={city.slug} href={`/casino/${city.slug}`} onClick={() => setMobileOpen(false)}>
-                        {city.heading} <CaretRight />
+                    {casinoBoards.map((board) => (
+                      <Link className="drawer-sub" key={board.slug} href={board.href} onClick={() => setMobileOpen(false)}>
+                        {board.heading} <CaretRight />
                       </Link>
                     ))}
                   </div>
                 )}
               </div>
-              {sections.map((item) => (
-                <div key={item.title}>
-                  <Link href={item.href} onClick={() => setMobileOpen(false)}>{item.title} <CaretRight /></Link>
+              {mainBoards.map((board) => (
+                <div key={board.slug}>
+                  <Link href={board.href} onClick={() => setMobileOpen(false)}>{board.name} <CaretRight /></Link>
                 </div>
               ))}
             </nav>

@@ -2,7 +2,7 @@ import "server-only";
 
 export type Post = {
   id: string;
-  city: string;
+  category: string;
   slug: string;
   title: string;
   excerpt: string;
@@ -39,18 +39,18 @@ async function rest(path: string, init?: RequestInit & { write?: boolean }) {
   return response;
 }
 
-export async function listPosts(city?: string, includeDrafts = false) {
+export async function listPosts(category?: string, includeDrafts = false) {
   const filters = ["select=*", "order=sort_order.asc,created_at.desc"];
-  if (city) filters.push(`city=eq.${encodeURIComponent(city)}`);
+  if (category) filters.push(`category=eq.${encodeURIComponent(category)}`);
   if (!includeDrafts) filters.push("published=eq.true");
   const response = await rest(`posts?${filters.join("&")}`);
   return (await response.json()) as Post[];
 }
 
-export async function getPost(city: string, slug: string, includeDrafts = false) {
+export async function getPost(category: string, slug: string, includeDrafts = false) {
   const filters = [
     "select=*",
-    `city=eq.${encodeURIComponent(city)}`,
+    `category=eq.${encodeURIComponent(category)}`,
     `slug=eq.${encodeURIComponent(slug)}`,
     "limit=1",
   ];
