@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ContactLinks } from "@/components/ContactButtons";
 
 export function PageFooter() {
   return (
@@ -11,7 +12,7 @@ export function PageFooter() {
         <div className="footer-links">
           <Link href="/#services">서비스</Link>
           <Link href="/casino">카지노 안내</Link>
-          <Link href="/#consult">1:1 상담</Link>
+          <ContactLinks />
         </div>
         <div className="footer-legal">
           <span>이용약관</span>

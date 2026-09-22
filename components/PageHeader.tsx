@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CaretDown, CaretRight, ChatsCircle, List, X } from "@phosphor-icons/react";
+import { CaretDown, CaretRight, List, X } from "@phosphor-icons/react";
+import { ContactButtons, ContactLinks } from "@/components/ContactButtons";
 import { useState } from "react";
 import { casinoCities } from "@/lib/casino";
 
@@ -24,7 +25,7 @@ export function PageHeader() {
         <div className="shell utility-inner">
           <span>특별한 여행이 일상이 되는 곳, ONE AGENCY</span>
           <div>
-            <Link href="/#consult">24시간 프라이빗 상담</Link>
+            <ContactLinks />
             <i aria-hidden="true" />
             <span>한국어</span>
           </div>
@@ -52,9 +53,7 @@ export function PageHeader() {
             ))}
           </nav>
           <div className="header-actions">
-            <Link className="gold-button header-consult" href="/#consult">
-              <ChatsCircle weight="fill" /> VIP 맞춤 상담 <ArrowRight />
-            </Link>
+            <ContactButtons className="contact-buttons header-contact" />
             <button type="button" className="menu-button" aria-label="메뉴 열기" aria-expanded={mobileOpen} onClick={() => setMobileOpen(true)}>
               <List size={29} />
             </button>
@@ -92,9 +91,7 @@ export function PageHeader() {
                 </div>
               ))}
             </nav>
-            <Link className="gold-button drawer-cta" href="/#consult" onClick={() => setMobileOpen(false)}>
-              <ChatsCircle weight="fill" /> VIP 맞춤 상담
-            </Link>
+            <ContactButtons className="contact-buttons drawer-contact" onClick={() => setMobileOpen(false)} />
           </aside>
         </div>
       )}

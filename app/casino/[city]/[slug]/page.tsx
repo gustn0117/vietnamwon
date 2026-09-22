@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { ArrowRight, CaretRight, ChatsCircle } from "@phosphor-icons/react/dist/ssr";
+import { CaretRight } from "@phosphor-icons/react/dist/ssr";
+import { ContactButtons } from "@/components/ContactButtons";
 import { PageFooter } from "@/components/PageFooter";
 import { PageHeader } from "@/components/PageHeader";
 import { findCity } from "@/lib/casino";
@@ -76,9 +77,9 @@ export default async function PostPage({ params }: Props) {
           <div className="article-cta">
             <div>
               <h2>{city.name} 일정, 직접 짜드립니다</h2>
-              <p>원하는 날짜와 인원을 남겨주시면 전담 컨시어지가 안내해 드립니다.</p>
+              <p>카카오톡이나 텔레그램으로 날짜와 인원을 보내주시면 바로 안내해 드립니다.</p>
             </div>
-            <Link className="gold-button" href="/#consult"><ChatsCircle weight="fill" /> 1:1 상담하기 <ArrowRight /></Link>
+            <ContactButtons className="contact-buttons article-contact" />
           </div>
 
           <Link className="article-back" href={`/casino/${city.slug}`}>{city.heading} 글 목록으로</Link>

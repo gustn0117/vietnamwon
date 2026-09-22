@@ -8,7 +8,6 @@ import {
   Car,
   CaretDown,
   CaretRight,
-  ChatsCircle,
   CheckCircle,
   Crown,
   Golf,
@@ -23,6 +22,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ContactButtons, ContactLinks, FloatingContact } from "@/components/ContactButtons";
 import { casinoCities } from "@/lib/casino";
 
 type Service = {
@@ -101,8 +101,6 @@ export function HomePage() {
   const [query, setQuery] = useState("");
   const [searched, setSearched] = useState(false);
   const [selected, setSelected] = useState<Service | null>(null);
-  const [consultOpen, setConsultOpen] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const filteredServices = useMemo(() => {
@@ -116,30 +114,24 @@ export function HomePage() {
   }, [query]);
 
   useEffect(() => {
-    const modalOpen = Boolean(selected) || consultOpen || mobileOpen;
+    const modalOpen = Boolean(selected) || mobileOpen;
     document.body.style.overflow = modalOpen ? "hidden" : "";
-    if ((selected || consultOpen) && closeButtonRef.current) closeButtonRef.current.focus();
+    if (selected && closeButtonRef.current) closeButtonRef.current.focus();
     return () => {
       document.body.style.overflow = "";
     };
-  }, [selected, consultOpen, mobileOpen]);
+  }, [selected, mobileOpen]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setSelected(null);
-        setConsultOpen(false);
         setMobileOpen(false);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
-
-  const openConsult = () => {
-    setSubmitted(false);
-    setConsultOpen(true);
-  };
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -160,9 +152,7 @@ export function HomePage() {
         <div className="shell utility-inner">
           <span>특별한 여행이 일상이 되는 곳, ONE AGENCY</span>
           <div>
-            <button type="button" onClick={openConsult}>24시간 프라이빗 상담</button>
-            <i aria-hidden="true" />
-            <button type="button" onClick={openConsult}>카카오톡 상담</button>
+            <ContactLinks />
             <i aria-hidden="true" />
             <span>한국어</span>
           </div>
@@ -206,9 +196,7 @@ export function HomePage() {
                 placeholder="어디로 떠나시나요?"
               />
             </form>
-            <button className="gold-button header-consult" type="button" onClick={openConsult}>
-              <ChatsCircle size={21} weight="fill" /> VIP 맞춤 상담 <ArrowRight />
-            </button>
+            <ContactButtons className="contact-buttons header-contact" />
             <button type="button" className="menu-button" aria-label="메뉴 열기" aria-expanded={mobileOpen} onClick={() => setMobileOpen(true)}>
               <List size={29} />
             </button>
@@ -254,10 +242,7 @@ export function HomePage() {
               ))}
               <a href="#experience" onClick={() => setMobileOpen(false)}>여행 TIP <CaretRight /></a>
             </nav>
-            <button className="gold-button drawer-cta" type="button" onClick={() => {
-              setMobileOpen(false);
-              openConsult();
-            }}><ChatsCircle weight="fill" /> VIP 맞춤 상담</button>
+            <ContactButtons className="contact-buttons drawer-contact" onClick={() => setMobileOpen(false)} />
           </aside>
         </div>
       )}
@@ -266,12 +251,9 @@ export function HomePage() {
         <Image src="/images/dark-hero.png" alt="호치민 야경이 보이는 프리미엄 VIP 라운지" fill priority sizes="100vw" className="hero-image" />
         <div className="hero-shade" />
         <div className="shell hero-inner" id="main-content">
-          <h1>베트남의 밤,<br /><em>가장 완벽하게</em></h1>
+          <h1>베트남 카지노<br /><em>가장 완벽하게</em></h1>
           <p className="hero-copy">검증된 현지 파트너와 함께하는 프라이빗 VIP 컨시어지</p>
-          <div className="hero-buttons">
-            <button className="gold-button hero-primary" type="button" onClick={openConsult}><ChatsCircle weight="fill" /> VIP 맞춤 상담 <ArrowRight /></button>
-            <a className="outline-button" href="#services">서비스 둘러보기 <ArrowRight /></a>
-          </div>
+          <ContactButtons className="contact-buttons hero-buttons" />
           <div className="hero-trust" aria-label="서비스 장점">
             <span><ShieldCheck /> 검증된 현지 파트너</span>
             <span><LockKey /> 프라이빗 & 안전한 진행</span>
@@ -350,20 +332,20 @@ export function HomePage() {
         <Image src="/images/dark-vehicle.png" alt="프라이빗 차량과 VIP 서비스" fill sizes="100vw" />
         <div className="consult-shade" />
         <div className="shell consult-content">
-          <div><h2>당신만의 특별한 밤을<br />지금 시작하세요.</h2><p>원하는 일정과 취향을 알려주시면 전담 컨시어지가 빠르게 답변드립니다.</p></div>
-          <button className="gold-button" type="button" onClick={openConsult}>지금 1:1 상담하기 <ArrowRight /></button>
+          <div><h2>당신만의 특별한 밤을<br />지금 시작하세요.</h2><p>카카오톡이나 텔레그램으로 일정과 취향을 보내주시면 전담 컨시어지가 바로 답변드립니다.</p></div>
+          <ContactButtons className="contact-buttons banner-contact" />
         </div>
       </section>
 
       <footer className="site-footer">
         <div className="shell footer-grid">
           <div className="footer-brand"><Image src="/images/one-agency-logo.png" alt="ONE AGENCY Casino Marketing & VIP Services" width={174} height={149} /></div>
-          <div className="footer-links"><a href="#services">서비스</a><a href="#experience">ONE AGENCY 경험</a><button type="button" onClick={openConsult}>1:1 상담</button></div>
+          <div className="footer-links"><a href="#services">서비스</a><a href="#experience">ONE AGENCY 경험</a><ContactLinks /></div>
           <div className="footer-legal"><span>이용약관</span><span>개인정보처리방침</span><span>© 2026 ONE AGENCY</span></div>
         </div>
       </footer>
 
-      <button className="floating-chat" type="button" onClick={openConsult} aria-label="카카오톡 상담 열기"><ChatsCircle weight="fill" /><span>1:1 상담</span></button>
+      <FloatingContact />
 
       {selected && (
         <div className="modal-layer" role="dialog" aria-modal="true" aria-labelledby="service-modal-title">
@@ -387,35 +369,12 @@ export function HomePage() {
                   ))}
                 </div>
               )}
-              <button className="gold-button" type="button" onClick={() => { setSelected(null); openConsult(); }}>이 서비스 상담하기 <ArrowRight /></button>
+              <ContactButtons className="contact-buttons modal-contact" />
             </div>
           </section>
         </div>
       )}
 
-      {consultOpen && (
-        <div className="modal-layer" role="dialog" aria-modal="true" aria-labelledby="consult-modal-title">
-          <button className="modal-backdrop" aria-label="상담 창 닫기" onClick={() => setConsultOpen(false)} />
-          <section className="consult-modal">
-            <button ref={closeButtonRef} className="modal-close" type="button" onClick={() => setConsultOpen(false)} aria-label="닫기"><X /></button>
-            {submitted ? (
-              <div className="success-state" role="status"><CheckCircle weight="fill" /><h2 id="consult-modal-title">상담 요청이 접수됐어요</h2><p>남겨주신 내용을 확인한 뒤 전담 컨시어지가 빠르게 연락드리겠습니다.</p><button className="gold-button" type="button" onClick={() => setConsultOpen(false)}>확인</button></div>
-            ) : (
-              <form className="consult-form" onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}>
-                <h2 id="consult-modal-title">VIP 맞춤 상담</h2><p>원하는 일정과 서비스를 남겨주시면 취향과 예산에 맞춰 안내해 드립니다.</p>
-                <div className="form-grid">
-                  <label>이름<input name="name" autoComplete="name" required placeholder="이름을 입력해주세요" /></label>
-                  <label>연락처<input name="tel" type="tel" autoComplete="tel" required placeholder="010-0000-0000" /></label>
-                  <label className="form-wide">관심 서비스<select name="service" defaultValue=""><option value="" disabled>서비스를 선택해주세요</option>{services.map((service) => <option key={service.title}>{service.title}</option>)}</select></label>
-                  <label className="form-wide">상담 내용<textarea name="message" rows={4} placeholder="인원, 일정, 지역, 원하는 분위기를 자유롭게 적어주세요" /></label>
-                </div>
-                <label className="privacy-check"><input type="checkbox" required /><span>상담을 위한 개인정보 수집 및 이용에 동의합니다.</span></label>
-                <button className="gold-button form-submit" type="submit">상담 요청 보내기 <ArrowRight /></button>
-              </form>
-            )}
-          </section>
-        </div>
-      )}
     </main>
   );
 }
