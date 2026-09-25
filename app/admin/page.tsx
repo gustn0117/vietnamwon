@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { allBoards } from "@/lib/boards";
 import { listPosts } from "@/lib/posts";
 import { isSignedIn } from "@/lib/session";
-import { removePost, signOut } from "./actions";
+import { boardHref, listBoards } from "@/lib/site";
+import { AdminNav } from "./AdminNav";
+import { removePost } from "./actions";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -22,22 +23,18 @@ export default async function AdminPage() {
     );
   }
 
-  const posts = await listPosts(undefined, true);
+  const [boards, posts] = await Promise.all([listBoards(true), listPosts(undefined, true)]);
 
   return (
     <main className="admin-main">
       <div className="admin-shell">
+        <AdminNav current="posts" />
         <header className="admin-head">
           <h1>글 관리</h1>
-          <div className="admin-head-actions">
-            <Link className="gold-button" href="/admin/posts/new">새 글 쓰기</Link>
-            <form action={signOut}>
-              <button className="outline-button" type="submit">로그아웃</button>
-            </form>
-          </div>
+          <Link className="gold-button" href="/admin/posts/new">새 글 쓰기</Link>
         </header>
 
-        {allBoards.map((board) => {
+        {boards.map((board) => {
           const boardPosts = posts.filter((post) => post.category === board.slug);
           return (
             <section className="admin-group" key={board.slug}>
@@ -52,13 +49,13 @@ export default async function AdminPage() {
                       <div>
                         <strong>{post.title}</strong>
                         <small>
-                          {board.href}/{post.slug}
+                          {boardHref(board)}/{post.slug}
                           {!post.published && " · 비공개"}
                         </small>
                       </div>
                       <div className="admin-list-actions">
                         <Link href={`/admin/posts/${post.id}`}>수정</Link>
-                        <Link href={`${board.href}/${post.slug}`}>보기</Link>
+                        <Link href={`${boardHref(board)}/${post.slug}`} target="_blank">보기</Link>
                         <form action={removePost}>
                           <input type="hidden" name="id" value={post.id} />
                           <button type="submit">삭제</button>

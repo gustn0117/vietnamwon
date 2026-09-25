@@ -3,11 +3,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CaretDown, CaretRight, List, X } from "@phosphor-icons/react";
-import { ContactButtons, ContactLinks } from "@/components/ContactButtons";
 import { useState } from "react";
-import { casinoBoards, mainBoards } from "@/lib/boards";
+import { ContactButtons, ContactLinks } from "@/components/ContactButtons";
+import type { Contact } from "@/lib/site";
 
-export function PageHeader() {
+export type NavBoard = { slug: string; name: string; heading: string; href: string };
+
+type Props = {
+  casinoBoards: NavBoard[];
+  mainBoards: NavBoard[];
+  contact: Contact;
+  utilityText: string;
+};
+
+export function PageHeader({ casinoBoards, mainBoards, contact, utilityText }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [casinoOpen, setCasinoOpen] = useState(false);
 
@@ -15,9 +24,9 @@ export function PageHeader() {
     <>
       <div className="utility-bar">
         <div className="shell utility-inner">
-          <span>특별한 여행이 일상이 되는 곳, ONE AGENCY</span>
+          <span>{utilityText}</span>
           <div>
-            <ContactLinks />
+            <ContactLinks contact={contact} />
             <i aria-hidden="true" />
             <span>한국어</span>
           </div>
@@ -30,14 +39,16 @@ export function PageHeader() {
             <Image src="/images/one-agency-logo.png" alt="ONE AGENCY Casino Marketing & VIP Services" width={174} height={149} priority />
           </Link>
           <nav className="desktop-nav" aria-label="주요 메뉴">
-            <div className="nav-item">
-              <Link href="/casino">카지노 <CaretDown aria-hidden="true" /></Link>
-              <div className="nav-sub">
-                {casinoBoards.map((board) => (
-                  <Link key={board.slug} href={board.href}>{board.heading}</Link>
-                ))}
+            {casinoBoards.length > 0 && (
+              <div className="nav-item">
+                <Link href="/casino">카지노 <CaretDown aria-hidden="true" /></Link>
+                <div className="nav-sub">
+                  {casinoBoards.map((board) => (
+                    <Link key={board.slug} href={board.href}>{board.heading}</Link>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
             {mainBoards.map((board) => (
               <div className="nav-item" key={board.slug}>
                 <Link href={board.href}>{board.name}</Link>
@@ -45,7 +56,7 @@ export function PageHeader() {
             ))}
           </nav>
           <div className="header-actions">
-            <ContactButtons className="contact-buttons header-contact" />
+            <ContactButtons contact={contact} className="contact-buttons header-contact" />
             <button type="button" className="menu-button" aria-label="메뉴 열기" aria-expanded={mobileOpen} onClick={() => setMobileOpen(true)}>
               <List size={29} />
             </button>
@@ -62,28 +73,30 @@ export function PageHeader() {
               <button type="button" onClick={() => setMobileOpen(false)} aria-label="메뉴 닫기"><X size={25} /></button>
             </div>
             <nav aria-label="모바일 주요 메뉴">
-              <div>
-                <button type="button" aria-expanded={casinoOpen} onClick={() => setCasinoOpen((open) => !open)}>
-                  카지노 <CaretDown className={casinoOpen ? "is-open" : ""} />
-                </button>
-                {casinoOpen && (
-                  <div className="drawer-subs">
-                    <Link className="drawer-sub" href="/casino" onClick={() => setMobileOpen(false)}>카지노 전체 <CaretRight /></Link>
-                    {casinoBoards.map((board) => (
-                      <Link className="drawer-sub" key={board.slug} href={board.href} onClick={() => setMobileOpen(false)}>
-                        {board.heading} <CaretRight />
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {casinoBoards.length > 0 && (
+                <div>
+                  <button type="button" aria-expanded={casinoOpen} onClick={() => setCasinoOpen((open) => !open)}>
+                    카지노 <CaretDown className={casinoOpen ? "is-open" : ""} />
+                  </button>
+                  {casinoOpen && (
+                    <div className="drawer-subs">
+                      <Link className="drawer-sub" href="/casino" onClick={() => setMobileOpen(false)}>카지노 전체 <CaretRight /></Link>
+                      {casinoBoards.map((board) => (
+                        <Link className="drawer-sub" key={board.slug} href={board.href} onClick={() => setMobileOpen(false)}>
+                          {board.heading} <CaretRight />
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
               {mainBoards.map((board) => (
                 <div key={board.slug}>
                   <Link href={board.href} onClick={() => setMobileOpen(false)}>{board.name} <CaretRight /></Link>
                 </div>
               ))}
             </nav>
-            <ContactButtons className="contact-buttons drawer-contact" onClick={() => setMobileOpen(false)} />
+            <ContactButtons contact={contact} className="contact-buttons drawer-contact" onClick={() => setMobileOpen(false)} />
           </aside>
         </div>
       )}

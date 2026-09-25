@@ -1,45 +1,40 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CaretRight } from "@phosphor-icons/react/dist/ssr";
-import { PageFooter } from "@/components/PageFooter";
-import { PageHeader } from "@/components/PageHeader";
-import type { Board } from "@/lib/boards";
+import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import { boardHref, type Board, type SiteData } from "@/lib/site";
 import type { Post } from "@/lib/posts";
 
 type Props = {
+  site: SiteData;
   board: Board;
   posts: Post[];
-  siblings: Board[];
 };
 
-export function BoardView({ board, posts, siblings }: Props) {
+export function BoardView({ site, board, posts }: Props) {
+  const href = boardHref(board);
+  const siblings = site.boards.filter((item) => item.grp === board.grp && item.slug !== board.slug);
+
   return (
     <>
-      <PageHeader />
+      <SiteHeader site={site} />
       <main className="article-main">
         <nav className="crumbs shell" aria-label="현재 위치">
-          {board.group === "casino" ? (
-            <>
-              <Link href="/casino">카지노</Link> <CaretRight aria-hidden="true" /> <span>{board.name}</span>
-            </>
-          ) : (
-            <>
-              <Link href="/">홈</Link> <CaretRight aria-hidden="true" /> <span>{board.name}</span>
-            </>
-          )}
+          {board.grp === "casino" ? <Link href="/casino">카지노</Link> : <Link href="/">홈</Link>}{" "}
+          <CaretRight aria-hidden="true" /> <span>{board.name}</span>
         </nav>
 
         <section className="page-head">
           <div className="shell">
             <h1>{board.heading}</h1>
-            <p>{board.description}</p>
+            {board.description && <p>{board.description}</p>}
           </div>
         </section>
 
         <section className="shell post-list">
           {posts.length ? (
             posts.map((post) => (
-              <Link className="post-card" key={post.id} href={`${board.href}/${post.slug}`}>
+              <Link className="post-card" key={post.id} href={`${href}/${post.slug}`}>
                 <div className="post-thumb">
                   {post.cover_url ? (
                     <Image src={post.cover_url} alt="" fill sizes="(max-width: 760px) 100vw, 420px" />
@@ -62,15 +57,15 @@ export function BoardView({ board, posts, siblings }: Props) {
           )}
         </section>
 
-        <section className="city-switch shell" aria-label="다른 게시판 보기">
-          {siblings
-            .filter((item) => item.slug !== board.slug)
-            .map((item) => (
-              <Link key={item.slug} href={item.href}>{item.heading} <ArrowRight /></Link>
+        {siblings.length > 0 && (
+          <section className="city-switch shell" aria-label="다른 게시판 보기">
+            {siblings.map((item) => (
+              <Link key={item.slug} href={boardHref(item)}>{item.heading} <ArrowRight /></Link>
             ))}
-        </section>
+          </section>
+        )}
       </main>
-      <PageFooter />
+      <SiteFooter site={site} />
     </>
   );
 }

@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getPostById } from "@/lib/posts";
 import { isSignedIn } from "@/lib/session";
+import { listBoards } from "@/lib/site";
+import { AdminNav } from "../../AdminNav";
 import { PostForm } from "../../PostForm";
 
 export const metadata: Metadata = {
@@ -10,20 +12,23 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   if (!(await isSignedIn())) redirect("/admin");
 
-  const post = await getPostById((await params).id);
+  const [post, boards] = await Promise.all([getPostById((await params).id), listBoards(true)]);
   if (!post) notFound();
 
   return (
     <main className="admin-main">
       <div className="admin-shell">
+        <AdminNav current="posts" />
         <header className="admin-head">
           <h1>글 수정</h1>
           <Link className="outline-button" href="/admin">목록으로</Link>
         </header>
-        <PostForm post={post} />
+        <PostForm post={post} boards={boards} />
       </div>
     </main>
   );

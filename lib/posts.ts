@@ -1,5 +1,7 @@
 import "server-only";
 
+import { rest, uploadImage } from "@/lib/rest";
+
 export type Post = {
   id: string;
   category: string;
@@ -8,36 +10,12 @@ export type Post = {
   excerpt: string;
   body: string;
   cover_url: string | null;
+  images: string[];
   published: boolean;
   sort_order: number;
   created_at: string;
   updated_at: string;
 };
-
-const url = process.env.SUPABASE_URL ?? "";
-const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
-const schema = process.env.SUPABASE_SCHEMA ?? "vietnamwon";
-const bucket = process.env.SUPABASE_BUCKET ?? "vietnamwon";
-
-function headers(write = false) {
-  return {
-    apikey: key,
-    Authorization: `Bearer ${key}`,
-    "Content-Type": "application/json",
-    ...(write ? { "Content-Profile": schema } : { "Accept-Profile": schema }),
-  };
-}
-
-async function rest(path: string, init?: RequestInit & { write?: boolean }) {
-  const { write, ...rest } = init ?? {};
-  const response = await fetch(`${url}/rest/v1/${path}`, {
-    ...rest,
-    headers: { ...headers(write), ...(rest.headers ?? {}) },
-    cache: "no-store",
-  });
-  if (!response.ok) throw new Error(`${response.status} ${await response.text()}`);
-  return response;
-}
 
 export async function listPosts(category?: string, includeDrafts = false) {
   const filters = ["select=*", "order=sort_order.asc,created_at.desc"];
@@ -67,11 +45,7 @@ export async function getPostById(id: string) {
 }
 
 export async function createPost(values: Partial<Post>) {
-  await rest("posts", {
-    method: "POST",
-    write: true,
-    body: JSON.stringify(values),
-  });
+  await rest("posts", { method: "POST", write: true, body: JSON.stringify(values) });
 }
 
 export async function updatePost(id: string, values: Partial<Post>) {
@@ -86,18 +60,4 @@ export async function deletePost(id: string) {
   await rest(`posts?id=eq.${encodeURIComponent(id)}`, { method: "DELETE", write: true });
 }
 
-export async function uploadCover(file: File) {
-  const extension = (file.name.split(".").pop() ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
-  const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`;
-  const response = await fetch(`${url}/storage/v1/object/${bucket}/${name}`, {
-    method: "POST",
-    headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
-      "Content-Type": file.type || "application/octet-stream",
-    },
-    body: new Uint8Array(await file.arrayBuffer()),
-  });
-  if (!response.ok) throw new Error(`업로드 실패: ${await response.text()}`);
-  return `${url}/storage/v1/object/public/${bucket}/${name}`;
-}
+export const uploadCover = uploadImage;

@@ -1,10 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
-import { PageFooter } from "@/components/PageFooter";
-import { PageHeader } from "@/components/PageHeader";
-import { casinoBoards } from "@/lib/boards";
+import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import { listPosts } from "@/lib/posts";
+import { boardHref, getSiteData } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "베트남 카지노 안내 | ONE AGENCY",
@@ -14,11 +13,12 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function CasinoIndexPage() {
-  const posts = await listPosts();
+  const [site, posts] = await Promise.all([getSiteData(), listPosts()]);
+  const cities = site.boards.filter((board) => board.grp === "casino");
 
   return (
     <>
-      <PageHeader />
+      <SiteHeader site={site} />
       <main className="article-main">
         <section className="page-head">
           <div className="shell">
@@ -28,10 +28,10 @@ export default async function CasinoIndexPage() {
         </section>
 
         <section className="shell city-index">
-          {casinoBoards.map((city) => {
+          {cities.map((city) => {
             const count = posts.filter((post) => post.category === city.slug).length;
             return (
-              <Link className="city-card" key={city.slug} href={city.href}>
+              <Link className="city-card" key={city.slug} href={boardHref(city)}>
                 <div>
                   <h2>{city.heading}</h2>
                   <p>{city.description}</p>
@@ -42,7 +42,7 @@ export default async function CasinoIndexPage() {
           })}
         </section>
       </main>
-      <PageFooter />
+      <SiteFooter site={site} />
     </>
   );
 }
