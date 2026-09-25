@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { ImageUploader } from "@/components/ImageUploader";
 import { iconOptions } from "@/components/icons";
 import type { Board } from "@/lib/site";
 import { saveBoardAction, type FormState } from "./actions";
@@ -52,14 +53,7 @@ export function BoardForm({ board }: { board?: Board }) {
             </select>
           </label>
         </div>
-        <label>카드 사진<input name="card_image_file" type="file" accept="image/*" /></label>
-        <input type="hidden" name="card_image" defaultValue={board?.card_image ?? ""} />
-        {board?.card_image && (
-          <div className="admin-preview">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={board.card_image} alt="" />
-          </div>
-        )}
+        <ImageUploader name="card_image" label="카드 사진" initial={board?.card_image ? [board.card_image] : []} />
       </section>
 
       <section className="admin-section">
@@ -69,14 +63,7 @@ export function BoardForm({ board }: { board?: Board }) {
           <label>큰 카드 제목<input name="feature_title" defaultValue={board?.feature_title ?? ""} /></label>
           <label>큰 카드 문구<input name="feature_copy" defaultValue={board?.feature_copy ?? ""} /></label>
         </div>
-        <label>큰 카드 사진<input name="feature_image_file" type="file" accept="image/*" /></label>
-        <input type="hidden" name="feature_image" defaultValue={board?.feature_image ?? ""} />
-        {board?.feature_image && (
-          <div className="admin-preview">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={board.feature_image} alt="" />
-          </div>
-        )}
+        <ImageUploader name="feature_image" label="큰 카드 사진" initial={board?.feature_image ? [board.feature_image] : []} />
       </section>
 
       {state.error && <p className="admin-error">{state.error}</p>}

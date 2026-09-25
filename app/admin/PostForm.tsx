@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
+import { ImageUploader } from "@/components/ImageUploader";
 import type { Post } from "@/lib/posts";
 import { savePost, type FormState } from "./actions";
 
@@ -17,9 +18,6 @@ export function PostForm({
   defaultCategory?: string;
 }) {
   const [state, action, pending] = useActionState<FormState, FormData>(savePost, {});
-  const [cover, setCover] = useState<string | null>(post?.cover_url ?? null);
-  const [images, setImages] = useState<string[]>(post?.images ?? []);
-  const [added, setAdded] = useState<string[]>([]);
 
   const casino = boards.filter((board) => board.grp === "casino");
   const main = boards.filter((board) => board.grp !== "casino");
@@ -66,68 +64,19 @@ export function PostForm({
         />
       </label>
       <p className="admin-hint">
-        본문 사진을 올리면 아래에 <b>[사진1]</b>, <b>[사진2]</b> 번호가 붙습니다. 본문에서 사진을 넣고 싶은 줄에 그 번호를 그대로
+        아래에서 본문 사진을 올리면 <b>[사진1]</b>, <b>[사진2]</b> 번호가 붙습니다. 본문에서 사진을 넣고 싶은 줄에 그 번호를 그대로
         적으면 그 자리에 사진이 들어갑니다. 번호를 적지 않은 사진은 글 맨 아래에 순서대로 붙습니다.
       </p>
 
-      <label>
-        대표 사진 (목록에 보이는 사진)
-        <input
-          name="cover"
-          type="file"
-          accept="image/*"
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            setCover(file ? URL.createObjectURL(file) : post?.cover_url ?? null);
-          }}
-        />
-      </label>
+      <ImageUploader name="cover_url" label="대표 사진 (목록에 보이는 사진)" initial={post?.cover_url ? [post.cover_url] : []} />
 
-      {cover && (
-        <div className="admin-preview">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={cover} alt="대표 사진 미리보기" />
-          {post?.cover_url && (
-            <label className="admin-check">
-              <input type="checkbox" name="remove_cover" /> 대표 사진 지우기
-            </label>
-          )}
-        </div>
-      )}
-
-      <label>
-        본문 사진 (여러 장 선택 가능)
-        <input
-          name="photos"
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={(event) => setAdded([...(event.target.files ?? [])].map((file) => URL.createObjectURL(file)))}
-        />
-      </label>
-
-      {(images.length > 0 || added.length > 0) && (
-        <div className="admin-photos">
-          {images.map((src, index) => (
-            <figure key={src}>
-              <input type="hidden" name="keep_image" value={src} />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" />
-              <figcaption>
-                <span>[사진{index + 1}]</span>
-                <button type="button" onClick={() => setImages(images.filter((item) => item !== src))}>빼기</button>
-              </figcaption>
-            </figure>
-          ))}
-          {added.map((src, index) => (
-            <figure key={src} className="is-new">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" />
-              <figcaption><span>[사진{images.length + index + 1}] 저장하면 추가됩니다</span></figcaption>
-            </figure>
-          ))}
-        </div>
-      )}
+      <ImageUploader
+        name="keep_image"
+        label="본문 사진 (여러 장 선택 가능)"
+        multiple
+        numbered
+        initial={post?.images ?? []}
+      />
 
       <div className="admin-row">
         <label>

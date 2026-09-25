@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { uploadImage } from "@/lib/rest";
 import { createPost, deletePost, getPostById, updatePost } from "@/lib/posts";
 import { checkPassword, endSession, requireSession, startSession } from "@/lib/session";
 import {
@@ -29,13 +28,6 @@ function refreshAll() {
   revalidatePath("/", "layout");
 }
 
-async function uploadFrom(formData: FormData, field: string) {
-  const file = formData.get(field);
-  if (!(file instanceof File) || file.size === 0) return undefined;
-  if (!file.type.startsWith("image/")) throw new Error("사진 파일만 올릴 수 있습니다.");
-  return uploadImage(file);
-}
-
 export async function signIn(_state: FormState, formData: FormData): Promise<FormState> {
   const password = String(formData.get("password") ?? "");
   if (!checkPassword(password)) return { error: "비밀번호가 맞지 않습니다." };
@@ -59,29 +51,12 @@ export async function savePost(_state: FormState, formData: FormData): Promise<F
   const published = formData.get("published") === "on";
   const sortOrder = Number(formData.get("sort_order") ?? 0) || 0;
   const slugInput = String(formData.get("slug") ?? "").trim();
-  const removeCover = formData.get("remove_cover") === "on";
-  const keptImages = formData.getAll("keep_image").map(String);
+  const coverUrl = String(formData.get("cover_url") ?? "").trim() || null;
+  const images = formData.getAll("keep_image").map(String).filter(Boolean);
 
   const boards = await listBoards(true);
   if (!boards.some((board) => board.slug === category)) return { error: "게시판을 선택해주세요." };
   if (!title) return { error: "제목을 입력해주세요." };
-
-  let coverUrl: string | null | undefined;
-  const images = [...keptImages];
-  try {
-    if (removeCover) coverUrl = null;
-    const uploaded = await uploadFrom(formData, "cover");
-    if (uploaded) coverUrl = uploaded;
-
-    for (const file of formData.getAll("photos")) {
-      if (file instanceof File && file.size > 0) {
-        if (!file.type.startsWith("image/")) return { error: "사진 파일만 올릴 수 있습니다." };
-        images.push(await uploadImage(file));
-      }
-    }
-  } catch {
-    return { error: "사진 업로드에 실패했습니다. 잠시 후 다시 시도해주세요." };
-  }
 
   const slug = slugify(slugInput || title);
   const values = { category, title, body, excerpt, slug, published, sort_order: sortOrder, images };
@@ -90,9 +65,9 @@ export async function savePost(_state: FormState, formData: FormData): Promise<F
     if (id) {
       const existing = await getPostById(id);
       if (!existing) return { error: "글을 찾을 수 없습니다." };
-      await updatePost(id, { ...values, ...(coverUrl !== undefined ? { cover_url: coverUrl } : {}) });
+      await updatePost(id, { ...values, cover_url: coverUrl });
     } else {
-      await createPost({ ...values, cover_url: coverUrl ?? null });
+      await createPost({ ...values, cover_url: coverUrl });
     }
   } catch (error) {
     if (String(error).includes("duplicate key")) return { error: "이 게시판에 같은 주소(slug)의 글이 이미 있습니다." };
@@ -145,15 +120,7 @@ export async function saveSite(_state: FormState, formData: FormData): Promise<F
   const values: Record<string, string> = {};
   for (const field of TEXT_FIELDS) values[field] = String(formData.get(field) ?? "").replace(/\r\n/g, "\n").trim();
 
-  try {
-    for (const field of IMAGE_FIELDS) {
-      const uploaded = await uploadFrom(formData, `${field}_file`);
-      if (uploaded) values[field] = uploaded;
-      else values[field] = String(formData.get(field) ?? "").trim();
-    }
-  } catch (error) {
-    return { error: String(error).includes("사진 파일") ? "사진 파일만 올릴 수 있습니다." : "사진 업로드에 실패했습니다." };
-  }
+  for (const field of IMAGE_FIELDS) values[field] = String(formData.get(field) ?? "").trim();
 
   await saveSettings(values);
   refreshAll();
@@ -189,15 +156,6 @@ export async function saveBoardAction(_state: FormState, formData: FormData): Pr
     feature_copy: String(formData.get("feature_copy") ?? "").trim() || null,
     feature_image: String(formData.get("feature_image") ?? "").trim() || null,
   };
-
-  try {
-    const cardUpload = await uploadFrom(formData, "card_image_file");
-    if (cardUpload) values.card_image = cardUpload;
-    const featureUpload = await uploadFrom(formData, "feature_image_file");
-    if (featureUpload) values.feature_image = featureUpload;
-  } catch {
-    return { error: "사진 업로드에 실패했습니다." };
-  }
 
   try {
     await saveBoard(isNew ? slug : original, isNew ? values : { ...values, slug }, isNew);

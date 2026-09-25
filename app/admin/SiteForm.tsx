@@ -1,26 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
+import { ImageUploader } from "@/components/ImageUploader";
 import type { Settings } from "@/lib/site";
 import { saveSite, type FormState } from "./actions";
 
 function ImageField({ name, label, value }: { name: string; label: string; value?: string }) {
-  return (
-    <div className="admin-image-field">
-      <label>
-        {label}
-        <input name={`${name}_file`} type="file" accept="image/*" />
-      </label>
-      <input type="hidden" name={name} defaultValue={value ?? ""} />
-      {value && (
-        <div className="admin-preview">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="" />
-          <small>새 사진을 고르면 이 사진이 바뀝니다.</small>
-        </div>
-      )}
-    </div>
-  );
+  return <ImageUploader name={name} label={label} initial={value ? [value] : []} />;
 }
 
 export function SiteForm({ settings }: { settings: Settings }) {

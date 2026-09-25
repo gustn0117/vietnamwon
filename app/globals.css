@@ -902,6 +902,9 @@ button, a, input, select, textarea { outline-offset: 3px; }
 .admin-image-field { display: grid; gap: 14px; }
 .admin-image-field .admin-preview small { color: var(--muted); font-size: 14px; }
 
+.uploader { display: grid; gap: 14px; }
+.uploader .admin-hint { margin: 0; }
+.admin-photos.is-single { grid-template-columns: minmax(0, 320px); }
 .admin-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
 .admin-photos figure { margin: 0; background: var(--panel-2); border: 1px solid var(--line-white); }
 .admin-photos figure.is-new { border-color: var(--gold); }
