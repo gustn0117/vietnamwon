@@ -27,6 +27,14 @@ export type SiteData = {
   settings: Settings;
 };
 
+export function decodeParam(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 export const boardHref = (board: Pick<Board, "slug" | "grp">) =>
   board.grp === "casino" ? `/casino/${board.slug}` : `/${board.slug}`;
 

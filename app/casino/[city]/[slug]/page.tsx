@@ -2,12 +2,14 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { PostView } from "@/components/PostView";
 import { getPost } from "@/lib/posts";
-import { getSiteData } from "@/lib/site";
+import { decodeParam, getSiteData } from "@/lib/site";
 
 type Props = { params: Promise<{ city: string; slug: string }> };
 
 async function load(params: Props["params"]) {
-  const { city, slug } = await params;
+  const { city: cityParam, slug: slugParam } = await params;
+  const city = decodeParam(cityParam);
+  const slug = decodeParam(slugParam);
   const site = await getSiteData();
   const board = site.boards.find((item) => item.slug === city && item.grp === "casino");
   if (!board) return null;

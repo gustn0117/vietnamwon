@@ -2,12 +2,12 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { BoardView } from "@/components/BoardView";
 import { listPosts } from "@/lib/posts";
-import { getSiteData } from "@/lib/site";
+import { decodeParam, getSiteData } from "@/lib/site";
 
 type Props = { params: Promise<{ board: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { board: slug } = await params;
+  const slug = decodeParam((await params).board);
   const site = await getSiteData();
   const board = site.boards.find((item) => item.slug === slug && item.grp === "main");
   if (!board) return {};
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export const dynamic = "force-dynamic";
 
 export default async function BoardPage({ params }: Props) {
-  const { board: slug } = await params;
+  const slug = decodeParam((await params).board);
   const site = await getSiteData();
   const board = site.boards.find((item) => item.slug === slug && item.grp === "main");
   if (!board) notFound();
