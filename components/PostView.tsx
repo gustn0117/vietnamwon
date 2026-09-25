@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CaretRight } from "@phosphor-icons/react/dist/ssr";
 import { ContactButtons } from "@/components/ContactButtons";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import { isHtml } from "@/lib/html";
 import { boardHref, contactLinks, type Board, type SiteData } from "@/lib/site";
 import type { Post } from "@/lib/posts";
 
@@ -74,14 +75,18 @@ export function PostView({ site, board, post }: { site: SiteData; board: Board; 
             </div>
           )}
 
-          <div className="article-body">
-            {blocks}
-            {rest.map((src) => (
-              <figure className="article-figure" key={src}>
-                <Image src={src} alt="" width={1200} height={800} sizes="(max-width: 1080px) 100vw, 1000px" />
-              </figure>
-            ))}
-          </div>
+          {isHtml(post.body) ? (
+            <div className="article-body rich" dangerouslySetInnerHTML={{ __html: post.body }} />
+          ) : (
+            <div className="article-body">
+              {blocks}
+              {rest.map((src) => (
+                <figure className="article-figure" key={src}>
+                  <Image src={src} alt="" width={1200} height={800} sizes="(max-width: 1080px) 100vw, 1000px" />
+                </figure>
+              ))}
+            </div>
+          )}
 
           <div className="article-cta">
             <div>

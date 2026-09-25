@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { isHtml, textToHtml } from "@/lib/html";
 import { getPostById } from "@/lib/posts";
 import { isSignedIn } from "@/lib/session";
 import { listBoards } from "@/lib/site";
@@ -28,7 +29,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
           <h1>글 수정</h1>
           <Link className="outline-button" href="/admin">목록으로</Link>
         </header>
-        <PostForm post={post} boards={boards} />
+        <PostForm post={post} boards={boards} bodyHtml={isHtml(post.body) ? post.body : textToHtml(post.body, post.images ?? [])} />
       </div>
     </main>
   );

@@ -25,7 +25,7 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
           <h1>새 글 쓰기</h1>
           <Link className="outline-button" href="/admin">목록으로</Link>
         </header>
-        <PostForm boards={boards} defaultCategory={(await searchParams).category} />
+        <PostForm boards={boards} defaultCategory={(await searchParams).category} bodyHtml="" />
       </div>
     </main>
   );

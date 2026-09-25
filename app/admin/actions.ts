@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createPost, deletePost, getPostById, updatePost } from "@/lib/posts";
+import { cleanHtml } from "@/lib/html";
 import { checkPassword, endSession, requireSession, startSession } from "@/lib/session";
 import {
   boardHref,
@@ -46,7 +47,7 @@ export async function savePost(_state: FormState, formData: FormData): Promise<F
   const id = String(formData.get("id") ?? "");
   const category = String(formData.get("category") ?? "");
   const title = String(formData.get("title") ?? "").trim();
-  const body = String(formData.get("body") ?? "").replace(/\r\n/g, "\n").trim();
+  const body = cleanHtml(String(formData.get("body") ?? "").replace(/\r\n/g, "\n").trim());
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const published = formData.get("published") === "on";
   const sortOrder = Number(formData.get("sort_order") ?? 0) || 0;

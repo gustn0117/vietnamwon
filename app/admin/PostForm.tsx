@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { ImageUploader } from "@/components/ImageUploader";
+import { RichEditor } from "@/components/RichEditor";
 import type { Post } from "@/lib/posts";
 import { savePost, type FormState } from "./actions";
 
@@ -12,10 +13,12 @@ export function PostForm({
   post,
   boards,
   defaultCategory,
+  bodyHtml,
 }: {
   post?: Post;
   boards: BoardOption[];
   defaultCategory?: string;
+  bodyHtml: string;
 }) {
   const [state, action, pending] = useActionState<FormState, FormData>(savePost, {});
 
@@ -54,29 +57,12 @@ export function PostForm({
         <input name="excerpt" defaultValue={post?.excerpt} placeholder="한두 문장으로 적어주세요" />
       </label>
 
-      <label>
-        본문
-        <textarea
-          name="body"
-          rows={16}
-          defaultValue={post?.body}
-          placeholder={"소개, 위치, 이용 방법 등을 자유롭게 적어주세요.\n\n사진을 넣고 싶은 자리에는 줄을 바꿔 [사진1] 처럼 적어주세요."}
-        />
-      </label>
-      <p className="admin-hint">
-        아래에서 본문 사진을 올리면 <b>[사진1]</b>, <b>[사진2]</b> 번호가 붙습니다. 본문에서 사진을 넣고 싶은 줄에 그 번호를 그대로
-        적으면 그 자리에 사진이 들어갑니다. 번호를 적지 않은 사진은 글 맨 아래에 순서대로 붙습니다.
-      </p>
+      <div className="admin-field">
+        <span className="admin-label">본문</span>
+        <RichEditor name="body" initialHtml={bodyHtml} />
+      </div>
 
       <ImageUploader name="cover_url" label="대표 사진 (목록에 보이는 사진)" initial={post?.cover_url ? [post.cover_url] : []} />
-
-      <ImageUploader
-        name="keep_image"
-        label="본문 사진 (여러 장 선택 가능)"
-        multiple
-        numbered
-        initial={post?.images ?? []}
-      />
 
       <div className="admin-row">
         <label>
