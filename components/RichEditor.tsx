@@ -89,7 +89,13 @@ function Button({
   children: React.ReactNode;
 }) {
   return (
-    <button type="button" className={active ? "is-active" : ""} title={title} onClick={onClick}>
+    <button
+      type="button"
+      className={active ? "is-active" : ""}
+      title={title}
+      onMouseDown={(event) => event.preventDefault()}
+      onClick={onClick}
+    >
       {children}
     </button>
   );
@@ -97,6 +103,18 @@ function Button({
 
 function Toolbar({ editor, onPickImages }: { editor: Editor; onPickImages: () => void }) {
   const imageSelected = editor.isActive("image");
+  const kept = useRef<{ from: number; to: number } | null>(null);
+
+  const remember = () => {
+    const { from, to } = editor.state.selection;
+    kept.current = { from, to };
+  };
+
+  const restored = () => {
+    const range = kept.current;
+    const chain = editor.chain().focus();
+    return range ? chain.setTextSelection(range) : chain;
+  };
 
   const setLink = () => {
     const previous = editor.getAttributes("link").href ?? "";
@@ -124,10 +142,12 @@ function Toolbar({ editor, onPickImages }: { editor: Editor; onPickImages: () =>
       <div className="editor-group">
         <select
           value={editor.getAttributes("textStyle").fontSize ?? ""}
+          onMouseDown={remember}
+          onFocus={remember}
           onChange={(event) => {
             const value = event.target.value;
-            if (!value) editor.chain().focus().unsetFontSize().run();
-            else editor.chain().focus().setFontSize(value).run();
+            if (!value) restored().unsetFontSize().run();
+            else restored().setFontSize(value).run();
           }}
           title="글자 크기"
         >
@@ -139,10 +159,12 @@ function Toolbar({ editor, onPickImages }: { editor: Editor; onPickImages: () =>
 
         <select
           value={editor.isActive("heading", { level: 2 }) ? "2" : editor.isActive("heading", { level: 3 }) ? "3" : "p"}
+          onMouseDown={remember}
+          onFocus={remember}
           onChange={(event) => {
             const value = event.target.value;
-            if (value === "p") editor.chain().focus().setParagraph().run();
-            else editor.chain().focus().toggleHeading({ level: Number(value) as 2 | 3 }).run();
+            if (value === "p") restored().setParagraph().run();
+            else restored().toggleHeading({ level: Number(value) as 2 | 3 }).run();
           }}
           title="문단 종류"
         >
@@ -175,6 +197,7 @@ function Toolbar({ editor, onPickImages }: { editor: Editor; onPickImages: () =>
             className="editor-color"
             style={{ background: color }}
             title="글자색"
+            onMouseDown={(event) => event.preventDefault()}
             onClick={() => editor.chain().focus().setColor(color).run()}
           />
         ))}
