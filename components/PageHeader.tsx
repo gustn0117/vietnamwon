@@ -7,18 +7,22 @@ import { useState } from "react";
 import { ContactButtons, ContactLinks } from "@/components/ContactButtons";
 import type { Contact } from "@/lib/site";
 
-export type NavBoard = { slug: string; name: string; heading: string; href: string };
+export type NavItem = {
+  key: string;
+  name: string;
+  href: string;
+  children: { key: string; name: string; href: string }[];
+};
 
 type Props = {
-  casinoBoards: NavBoard[];
-  mainBoards: NavBoard[];
+  items: NavItem[];
   contact: Contact;
   utilityText: string;
 };
 
-export function PageHeader({ casinoBoards, mainBoards, contact, utilityText }: Props) {
+export function PageHeader({ items, contact, utilityText }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [casinoOpen, setCasinoOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   return (
     <>
@@ -39,19 +43,19 @@ export function PageHeader({ casinoBoards, mainBoards, contact, utilityText }: P
             <Image src="/images/one-agency-logo.png" alt="ONE AGENCY Casino Marketing & VIP Services" width={174} height={149} priority />
           </Link>
           <nav className="desktop-nav" aria-label="주요 메뉴">
-            {casinoBoards.length > 0 && (
-              <div className="nav-item">
-                <Link href="/casino">카지노 <CaretDown aria-hidden="true" /></Link>
-                <div className="nav-sub">
-                  {casinoBoards.map((board) => (
-                    <Link key={board.slug} href={board.href}>{board.heading}</Link>
-                  ))}
-                </div>
-              </div>
-            )}
-            {mainBoards.map((board) => (
-              <div className="nav-item" key={board.slug}>
-                <Link href={board.href}>{board.name}</Link>
+            {items.map((item) => (
+              <div className="nav-item" key={item.key}>
+                <Link href={item.href}>
+                  {item.name}
+                  {item.children.length > 0 && <CaretDown aria-hidden="true" />}
+                </Link>
+                {item.children.length > 0 && (
+                  <div className="nav-sub">
+                    {item.children.map((child) => (
+                      <Link key={child.key} href={child.href}>{child.name}</Link>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </nav>
@@ -73,26 +77,31 @@ export function PageHeader({ casinoBoards, mainBoards, contact, utilityText }: P
               <button type="button" onClick={() => setMobileOpen(false)} aria-label="메뉴 닫기"><X size={25} /></button>
             </div>
             <nav aria-label="모바일 주요 메뉴">
-              {casinoBoards.length > 0 && (
-                <div>
-                  <button type="button" aria-expanded={casinoOpen} onClick={() => setCasinoOpen((open) => !open)}>
-                    카지노 <CaretDown className={casinoOpen ? "is-open" : ""} />
-                  </button>
-                  {casinoOpen && (
+              {items.map((item) => (
+                <div key={item.key}>
+                  {item.children.length > 0 ? (
+                    <button
+                      type="button"
+                      aria-expanded={openMenu === item.key}
+                      onClick={() => setOpenMenu(openMenu === item.key ? null : item.key)}
+                    >
+                      {item.name} <CaretDown className={openMenu === item.key ? "is-open" : ""} />
+                    </button>
+                  ) : (
+                    <Link href={item.href} onClick={() => setMobileOpen(false)}>{item.name} <CaretRight /></Link>
+                  )}
+                  {item.children.length > 0 && openMenu === item.key && (
                     <div className="drawer-subs">
-                      <Link className="drawer-sub" href="/casino" onClick={() => setMobileOpen(false)}>카지노 전체 <CaretRight /></Link>
-                      {casinoBoards.map((board) => (
-                        <Link className="drawer-sub" key={board.slug} href={board.href} onClick={() => setMobileOpen(false)}>
-                          {board.heading} <CaretRight />
+                      <Link className="drawer-sub" href={item.href} onClick={() => setMobileOpen(false)}>
+                        {item.name} 전체 <CaretRight />
+                      </Link>
+                      {item.children.map((child) => (
+                        <Link className="drawer-sub" key={child.key} href={child.href} onClick={() => setMobileOpen(false)}>
+                          {child.name} <CaretRight />
                         </Link>
                       ))}
                     </div>
                   )}
-                </div>
-              )}
-              {mainBoards.map((board) => (
-                <div key={board.slug}>
-                  <Link href={board.href} onClick={() => setMobileOpen(false)}>{board.name} <CaretRight /></Link>
                 </div>
               ))}
             </nav>

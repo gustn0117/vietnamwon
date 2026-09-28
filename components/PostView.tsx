@@ -53,6 +53,7 @@ export function PostView({ site, board, post }: { site: SiteData; board: Board; 
     day: "numeric",
   });
   const images = Array.isArray(post.images) ? post.images : [];
+  const parent = board.parent ? site.boards.find((item) => item.slug === board.parent) : null;
   const { blocks, rest } = renderBody(post.body, images);
 
   return (
@@ -60,9 +61,14 @@ export function PostView({ site, board, post }: { site: SiteData; board: Board; 
       <SiteHeader site={site} />
       <main className="article-main">
         <nav className="crumbs shell" aria-label="현재 위치">
-          {board.grp === "casino" ? <Link href="/casino">카지노</Link> : <Link href="/">홈</Link>}{" "}
-          <CaretRight aria-hidden="true" /> <Link href={boardHref(board)}>{board.name}</Link>{" "}
-          <CaretRight aria-hidden="true" /> <span>{post.title}</span>
+          <Link href="/">홈</Link> <CaretRight aria-hidden="true" />{" "}
+          {parent && (
+            <>
+              <Link href={boardHref(parent, site.boards)}>{parent.name}</Link> <CaretRight aria-hidden="true" />{" "}
+            </>
+          )}
+          <Link href={boardHref(board, site.boards)}>{board.name}</Link> <CaretRight aria-hidden="true" />{" "}
+          <span>{post.title}</span>
         </nav>
 
         <article className="shell article">
@@ -96,7 +102,7 @@ export function PostView({ site, board, post }: { site: SiteData; board: Board; 
             <ContactButtons contact={contactLinks(site.settings)} className="contact-buttons article-contact" />
           </div>
 
-          <Link className="article-back" href={boardHref(board)}>{board.heading} 글 목록으로</Link>
+          <Link className="article-back" href={boardHref(board, site.boards)}>{board.heading} 글 목록으로</Link>
         </article>
       </main>
       <SiteFooter site={site} />

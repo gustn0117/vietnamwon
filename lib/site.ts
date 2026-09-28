@@ -7,9 +7,13 @@ export type Board = {
   name: string;
   heading: string;
   description: string;
-  grp: "casino" | "main";
+  grp: string;
+  parent: string | null;
+  segment: string;
   sort_order: number;
   visible: boolean;
+  menu_show: boolean;
+  feature_link: boolean;
   card_show: boolean;
   card_subtitle: string;
   card_image: string | null;
@@ -35,18 +39,28 @@ export function decodeParam(value: string) {
   }
 }
 
-export const boardHref = (board: Pick<Board, "slug" | "grp">) =>
-  board.grp === "casino" ? `/casino/${board.slug}` : `/${board.slug}`;
+export function boardHref(board: Pick<Board, "segment" | "parent">, boards: Board[] = []) {
+  if (!board.parent) return `/${board.segment}`;
+  const parent = boards.find((item) => item.slug === board.parent);
+  return `/${parent?.segment ?? board.parent}/${board.segment}`;
+}
+
+export const topBoards = (boards: Board[]) => boards.filter((board) => !board.parent);
+export const childrenOf = (boards: Board[], slug: string) => boards.filter((board) => board.parent === slug);
+
+export function findBySegment(boards: Board[], segment: string, parentSlug: string | null = null) {
+  return boards.find((board) => board.segment === segment && (board.parent ?? null) === parentSlug) ?? null;
+}
 
 export async function listBoards(includeHidden = false) {
-  const response = await rest(`boards?select=*&order=grp.asc,sort_order.asc`);
+  const response = await rest(`boards?select=*&order=sort_order.asc`);
   const boards = (await response.json()) as Board[];
   return includeHidden ? boards : boards.filter((board) => board.visible);
 }
 
-export async function getBoard(slug: string, grp?: Board["grp"]) {
+export async function getBoard(slug: string) {
   const boards = await listBoards(true);
-  return boards.find((board) => board.slug === slug && (!grp || board.grp === grp)) ?? null;
+  return boards.find((board) => board.slug === slug) ?? null;
 }
 
 export async function getSettings(): Promise<Settings> {

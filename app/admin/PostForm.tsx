@@ -7,7 +7,7 @@ import { RichEditor } from "@/components/RichEditor";
 import type { Post } from "@/lib/posts";
 import { savePost, type FormState } from "./actions";
 
-type BoardOption = { slug: string; heading: string; grp: string };
+type BoardOption = { slug: string; heading: string; parent: string | null; name: string };
 
 export function PostForm({
   post,
@@ -22,8 +22,7 @@ export function PostForm({
 }) {
   const [state, action, pending] = useActionState<FormState, FormData>(savePost, {});
 
-  const casino = boards.filter((board) => board.grp === "casino");
-  const main = boards.filter((board) => board.grp !== "casino");
+  const tops = boards.filter((board) => !board.parent);
 
   return (
     <form className="admin-form" action={action}>
@@ -32,18 +31,19 @@ export function PostForm({
       <label>
         게시판
         <select name="category" defaultValue={post?.category ?? defaultCategory ?? boards[0]?.slug} required>
-          {casino.length > 0 && (
-            <optgroup label="카지노">
-              {casino.map((board) => (
-                <option key={board.slug} value={board.slug}>{board.heading}</option>
-              ))}
-            </optgroup>
-          )}
-          <optgroup label="그 외">
-            {main.map((board) => (
-              <option key={board.slug} value={board.slug}>{board.heading}</option>
-            ))}
-          </optgroup>
+          {tops.map((top) => {
+            const children = boards.filter((board) => board.parent === top.slug);
+            return children.length ? (
+              <optgroup key={top.slug} label={top.name}>
+                <option value={top.slug}>{top.heading}</option>
+                {children.map((child) => (
+                  <option key={child.slug} value={child.slug}>{child.heading}</option>
+                ))}
+              </optgroup>
+            ) : (
+              <option key={top.slug} value={top.slug}>{top.heading}</option>
+            );
+          })}
         </select>
       </label>
 

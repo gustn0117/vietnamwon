@@ -99,10 +99,6 @@ const TEXT_FIELDS = [
   "hero_trust_3",
   "signature_title",
   "signature_copy",
-  "casino_card_subtitle",
-  "casino_card_description",
-  "casino_feature_title",
-  "casino_feature_copy",
   "experience_heading",
   "experience_copy",
   "promise_heading",
@@ -114,7 +110,7 @@ const TEXT_FIELDS = [
   "partners_title",
 ];
 
-const IMAGE_FIELDS = ["hero_image", "banner_image", "casino_card_image", "casino_feature_image"];
+const IMAGE_FIELDS = ["hero_image", "banner_image"];
 
 export async function saveSite(_state: FormState, formData: FormData): Promise<FormState> {
   await requireSession();
@@ -134,21 +130,27 @@ export async function saveBoardAction(_state: FormState, formData: FormData): Pr
   await requireSession();
 
   const original = String(formData.get("original_slug") ?? "");
-  const slug = slugify(String(formData.get("slug") ?? ""));
+  const parent = String(formData.get("parent") ?? "").trim() || null;
+  const segment = slugify(String(formData.get("segment") ?? ""));
+  const slug = original || (parent ? `${parent}-${segment}` : segment);
   const name = String(formData.get("name") ?? "").trim();
   const heading = String(formData.get("heading") ?? "").trim() || name;
 
   if (!name) return { error: "메뉴 이름을 입력해주세요." };
-  if (!/^[a-z0-9-]+$/.test(slug)) return { error: "주소(slug)는 영문 소문자, 숫자, 하이픈만 쓸 수 있습니다." };
+  if (!/^[a-z0-9-]+$/.test(segment)) return { error: "주소는 영문 소문자, 숫자, 하이픈만 쓸 수 있습니다." };
 
   const isNew = !original;
-  if (isNew && (await getBoard(slug))) return { error: "같은 주소(slug)의 게시판이 이미 있습니다." };
+  if (isNew && (await getBoard(slug))) return { error: "같은 주소의 메뉴가 이미 있습니다." };
 
   const values: Record<string, unknown> = {
     name,
     heading,
     description: String(formData.get("description") ?? "").replace(/\r\n/g, "\n").trim(),
-    grp: formData.get("grp") === "casino" ? "casino" : "main",
+    grp: "main",
+    parent,
+    segment,
+    menu_show: formData.get("menu_show") === "on",
+    feature_link: formData.get("feature_link") === "on",
     sort_order: Number(formData.get("sort_order") ?? 0) || 0,
     visible: formData.get("visible") === "on",
     card_show: formData.get("card_show") === "on",

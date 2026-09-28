@@ -11,7 +11,7 @@ import {
 import { ContactButtons, FloatingContact } from "@/components/ContactButtons";
 import { BoardIcon } from "@/components/icons";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
-import { boardHref, contactLinks, type SiteData } from "@/lib/site";
+import { boardHref, contactLinks, topBoards, type SiteData } from "@/lib/site";
 
 function lines(value: string) {
   return value.split("\n").map((line, index, all) => (
@@ -33,49 +33,29 @@ export function HomePage({ site }: { site: SiteData }) {
   const { settings, boards } = site;
   const contact = contactLinks(settings);
 
-  const cards = [
-    {
-      key: "casino",
-      title: "카지노",
-      subtitle: settings.casino_card_subtitle ?? "",
-      image: settings.casino_card_image || null,
-      icon: "spade",
-      position: null as string | null,
-      href: "/casino",
-    },
-    ...boards
-      .filter((board) => board.grp === "main" && board.card_show)
-      .map((board) => ({
-        key: board.slug,
-        title: board.name,
-        subtitle: board.card_subtitle,
-        image: board.card_image,
-        icon: board.card_icon,
-        position: board.card_position,
-        href: boardHref(board),
-      })),
-  ];
+  const cards = boards
+    .filter((board) => board.card_show)
+    .map((board) => ({
+      key: board.slug,
+      title: board.name,
+      subtitle: board.card_subtitle,
+      image: board.card_image,
+      icon: board.card_icon,
+      position: board.card_position,
+      href: boardHref(board, boards),
+    }));
 
-  const features = [
-    ...(settings.casino_feature_title
-      ? [{
-          key: "casino",
-          title: settings.casino_feature_title,
-          copy: settings.casino_feature_copy ?? "",
-          image: settings.casino_feature_image || null,
-          href: "/casino",
-        }]
-      : []),
-    ...boards
-      .filter((board) => board.feature_title)
-      .map((board) => ({
-        key: board.slug,
-        title: board.feature_title ?? "",
-        copy: board.feature_copy ?? "",
-        image: board.feature_image,
-        href: boardHref(board),
-      })),
-  ];
+  const features = boards
+    .filter((board) => board.feature_title)
+    .map((board) => ({
+      key: board.slug,
+      title: board.feature_title ?? "",
+      copy: board.feature_copy ?? "",
+      image: board.feature_image,
+      href: board.feature_link ? boardHref(board, boards) : null,
+    }));
+
+  const firstMenu = topBoards(boards).find((board) => board.menu_show);
 
   return (
     <>
@@ -141,23 +121,30 @@ export function HomePage({ site }: { site: SiteData }) {
           <div className="experience-heading">
             <h2>{lines(settings.experience_heading ?? "")}</h2>
             <p>{lines(settings.experience_copy ?? "")}</p>
-            <Link href="/casino">카지노 안내 보기 <ArrowRight /></Link>
+            {firstMenu && <Link href={boardHref(firstMenu, boards)}>{firstMenu.name} 안내 보기 <ArrowRight /></Link>}
           </div>
           <div className="experience-grid">
-            {features.map((feature) => (
-              <Link className="experience-card" key={feature.key} href={feature.href}>
-                {feature.image ? (
-                  <Image src={feature.image} alt="" fill sizes="(max-width: 760px) 100vw, 50vw" />
-                ) : (
-                  <span className="hatch" aria-hidden="true"><em>{feature.title} 사진 자리</em></span>
-                )}
-                <span className="experience-overlay" />
-                <span>
-                  <strong>{feature.title}</strong>
-                  <small>{feature.copy}</small>
-                </span>
-              </Link>
-            ))}
+            {features.map((feature) => {
+              const inner = (
+                <>
+                  {feature.image ? (
+                    <Image src={feature.image} alt="" fill sizes="(max-width: 760px) 100vw, 50vw" />
+                  ) : (
+                    <span className="hatch" aria-hidden="true"><em>{feature.title} 사진 자리</em></span>
+                  )}
+                  <span className="experience-overlay" />
+                  <span>
+                    <strong>{feature.title}</strong>
+                    <small>{feature.copy}</small>
+                  </span>
+                </>
+              );
+              return feature.href ? (
+                <Link className="experience-card" key={feature.key} href={feature.href}>{inner}</Link>
+              ) : (
+                <div className="experience-card is-static" key={feature.key}>{inner}</div>
+              );
+            })}
           </div>
         </div>
       </section>

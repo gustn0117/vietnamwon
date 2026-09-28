@@ -2,18 +2,18 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { PostView } from "@/components/PostView";
 import { getPost } from "@/lib/posts";
-import { decodeParam, getSiteData } from "@/lib/site";
+import { decodeParam, findBySegment, getSiteData } from "@/lib/site";
 
-type Props = { params: Promise<{ city: string; slug: string }> };
+type Props = { params: Promise<{ board: string; slug: string; post: string }> };
 
 async function load(params: Props["params"]) {
-  const { city: cityParam, slug: slugParam } = await params;
-  const city = decodeParam(cityParam);
-  const slug = decodeParam(slugParam);
+  const { board: boardParam, slug: subParam, post: postParam } = await params;
   const site = await getSiteData();
-  const board = site.boards.find((item) => item.slug === city && item.grp === "casino");
+  const parent = findBySegment(site.boards, decodeParam(boardParam));
+  if (!parent) return null;
+  const board = findBySegment(site.boards, decodeParam(subParam), parent.slug);
   if (!board) return null;
-  const post = await getPost(board.slug, slug);
+  const post = await getPost(board.slug, decodeParam(postParam));
   return post ? { site, board, post } : null;
 }
 
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export const dynamic = "force-dynamic";
 
-export default async function CasinoPostPage({ params }: Props) {
+export default async function ChildPostPage({ params }: Props) {
   const data = await load(params);
   if (!data) notFound();
   return <PostView site={data.site} board={data.board} post={data.post} />;

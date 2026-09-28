@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { isSignedIn } from "@/lib/session";
-import { getBoard } from "@/lib/site";
+import { getBoard, listBoards, topBoards } from "@/lib/site";
+
 import { AdminNav } from "../../AdminNav";
 import { BoardForm } from "../../BoardForm";
 
@@ -19,6 +20,8 @@ export default async function EditBoardPage({ params }: { params: Promise<{ slug
   const board = await getBoard((await params).slug);
   if (!board) notFound();
 
+  const parents = topBoards(await listBoards(true)).map((item) => ({ slug: item.slug, name: item.name }));
+
   return (
     <main className="admin-main">
       <div className="admin-shell">
@@ -27,7 +30,7 @@ export default async function EditBoardPage({ params }: { params: Promise<{ slug
           <h1>게시판 수정</h1>
           <Link className="outline-button" href="/admin/boards">목록으로</Link>
         </header>
-        <BoardForm board={board} />
+        <BoardForm board={board} parents={parents} />
       </div>
     </main>
   );

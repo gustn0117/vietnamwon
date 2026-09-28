@@ -7,7 +7,7 @@ import { iconOptions } from "@/components/icons";
 import type { Board } from "@/lib/site";
 import { saveBoardAction, type FormState } from "./actions";
 
-export function BoardForm({ board }: { board?: Board }) {
+export function BoardForm({ board, parents }: { board?: Board; parents: { slug: string; name: string }[] }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveBoardAction, {});
 
   return (
@@ -24,17 +24,22 @@ export function BoardForm({ board }: { board?: Board }) {
       <div className="admin-row3">
         <label>
           위치
-          <select name="grp" defaultValue={board?.grp ?? "main"}>
-            <option value="main">상단 메뉴</option>
-            <option value="casino">카지노 하위</option>
+          <select name="parent" defaultValue={board?.parent ?? ""}>
+            <option value="">상단 메뉴</option>
+            {parents.map((item) => (
+              <option key={item.slug} value={item.slug}>{item.name} 하위</option>
+            ))}
           </select>
         </label>
-        <label>주소(slug)<input name="slug" defaultValue={board?.slug} placeholder="nightlife" required /></label>
+        <label>주소<input name="segment" defaultValue={board?.segment} placeholder="nightlife" required /></label>
         <label>정렬 순서<input name="sort_order" type="number" defaultValue={board?.sort_order ?? 0} /></label>
       </div>
 
       <label className="admin-check">
-        <input type="checkbox" name="visible" defaultChecked={board?.visible ?? true} /> 메뉴에 보이기
+        <input type="checkbox" name="menu_show" defaultChecked={board?.menu_show ?? true} /> 상단 메뉴에 보이기
+      </label>
+      <label className="admin-check">
+        <input type="checkbox" name="visible" defaultChecked={board?.visible ?? true} /> 사이트에서 사용 (끄면 페이지도 닫힙니다)
       </label>
 
       <section className="admin-section">
@@ -59,6 +64,9 @@ export function BoardForm({ board }: { board?: Board }) {
       <section className="admin-section">
         <h2>메인 화면 큰 카드</h2>
         <p className="admin-hint">제목을 비워두면 큰 카드에 나오지 않습니다.</p>
+        <label className="admin-check">
+          <input type="checkbox" name="feature_link" defaultChecked={board?.feature_link ?? true} /> 큰 카드를 누르면 이 메뉴로 이동
+        </label>
         <div className="admin-row">
           <label>큰 카드 제목<input name="feature_title" defaultValue={board?.feature_title ?? ""} /></label>
           <label>큰 카드 문구<input name="feature_copy" defaultValue={board?.feature_copy ?? ""} /></label>

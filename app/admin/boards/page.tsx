@@ -34,10 +34,12 @@ export default async function AdminBoardsPage() {
             return (
               <li key={board.slug}>
                 <div>
-                  <strong>{board.name}</strong>
+                  <strong>{board.parent ? "— " : ""}{board.name}</strong>
                   <small>
-                    {boardHref(board)} · 글 {count}개 · {board.grp === "casino" ? "카지노 하위" : "상단 메뉴"}
-                    {!board.visible && " · 숨김"}
+                    {boardHref(board, boards)} · 글 {count}개
+                    {board.parent && ` · ${boards.find((item) => item.slug === board.parent)?.name ?? board.parent} 하위`}
+                    {!board.menu_show && " · 메뉴 숨김"}
+                    {!board.visible && " · 사용 안 함"}
                   </small>
                 </div>
                 <div className="admin-list-actions">

@@ -46,21 +46,6 @@ export function SiteForm({ settings }: { settings: Settings }) {
       </section>
 
       <section className="admin-section">
-        <h2>카지노 카드</h2>
-        <p className="admin-hint">메인 화면의 카지노 카드와 큰 카드에 쓰입니다. 나머지 메뉴 카드는 게시판 관리에서 바꿉니다.</p>
-        <div className="admin-row">
-          <label>카드 부제<input name="casino_card_subtitle" defaultValue={value("casino_card_subtitle")} /></label>
-          <label>카드 설명<input name="casino_card_description" defaultValue={value("casino_card_description")} /></label>
-        </div>
-        <ImageField name="casino_card_image" label="카드 사진" value={value("casino_card_image")} />
-        <div className="admin-row">
-          <label>큰 카드 제목<input name="casino_feature_title" defaultValue={value("casino_feature_title")} /></label>
-          <label>큰 카드 문구<input name="casino_feature_copy" defaultValue={value("casino_feature_copy")} /></label>
-        </div>
-        <ImageField name="casino_feature_image" label="큰 카드 사진" value={value("casino_feature_image")} />
-      </section>
-
-      <section className="admin-section">
         <h2>중간 소개 문구</h2>
         <label>큰 제목 (줄바꿈 가능)<textarea name="experience_heading" rows={2} defaultValue={value("experience_heading")} /></label>
         <label>옆 설명 (줄바꿈 가능)<textarea name="experience_copy" rows={2} defaultValue={value("experience_copy")} /></label>
