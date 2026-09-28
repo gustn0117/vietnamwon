@@ -9,9 +9,19 @@ function ImageField({ name, label, value }: { name: string; label: string; value
   return <ImageUploader name={name} label={label} initial={value ? [value] : []} />;
 }
 
+function parseLogos(raw?: string) {
+  try {
+    const parsed = JSON.parse(raw ?? "[]");
+    return Array.isArray(parsed) ? (parsed as string[]).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function SiteForm({ settings }: { settings: Settings }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveSite, {});
   const value = (key: string) => settings[key] ?? "";
+  const partnerLogos = parseLogos(settings.partner_logos);
 
   return (
     <form className="admin-form" action={action}>
@@ -63,6 +73,13 @@ export function SiteForm({ settings }: { settings: Settings }) {
         <label>제목 (줄바꿈 가능)<textarea name="banner_heading" rows={2} defaultValue={value("banner_heading")} /></label>
         <label>설명<textarea name="banner_copy" rows={2} defaultValue={value("banner_copy")} /></label>
         <ImageField name="banner_image" label="배너 배경 사진" value={value("banner_image")} />
+      </section>
+
+      <section className="admin-section">
+        <h2>제휴 업체</h2>
+        <p className="admin-hint">사이트 맨 아래 회사 로고 옆에 보입니다. 로고는 여러 장 한 번에 올릴 수 있고, 올린 순서대로 나열됩니다.</p>
+        <label>제목<input name="partners_title" defaultValue={value("partners_title")} placeholder="제휴 업체" /></label>
+        <ImageUploader name="partner_logos" label="제휴 업체 로고" multiple initial={partnerLogos} />
       </section>
 
       <section className="admin-section">

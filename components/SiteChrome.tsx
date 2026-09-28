@@ -23,14 +23,37 @@ export function SiteHeader({ site }: { site: SiteData }) {
   );
 }
 
+function partnerLogos(settings: SiteData["settings"]) {
+  try {
+    const parsed = JSON.parse(settings.partner_logos ?? "[]");
+    return Array.isArray(parsed) ? (parsed as string[]).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function SiteFooter({ site }: { site: SiteData }) {
   const tip = site.boards.find((board) => board.slug === "travel-tip");
+  const logos = partnerLogos(site.settings);
   return (
     <footer className="site-footer">
       <div className="shell footer-grid">
         <div className="footer-brand">
           <Image src="/images/one-agency-logo.png" alt="ONE AGENCY" width={174} height={149} />
         </div>
+
+        {logos.length > 0 && (
+          <div className="footer-partners">
+            <h2>{site.settings.partners_title || "제휴 업체"}</h2>
+            <div className="partner-grid">
+              {logos.map((logo) => (
+                <span className="partner-logo" key={logo}>
+                  <Image src={logo} alt="" width={160} height={160} sizes="160px" />
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="footer-links">
           <Link href="/#services">서비스</Link>
           <Link href="/casino">카지노 안내</Link>

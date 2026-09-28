@@ -111,6 +111,7 @@ const TEXT_FIELDS = [
   "banner_copy",
   "kakao_url",
   "telegram_url",
+  "partners_title",
 ];
 
 const IMAGE_FIELDS = ["hero_image", "banner_image", "casino_card_image", "casino_feature_image"];
@@ -122,6 +123,7 @@ export async function saveSite(_state: FormState, formData: FormData): Promise<F
   for (const field of TEXT_FIELDS) values[field] = String(formData.get(field) ?? "").replace(/\r\n/g, "\n").trim();
 
   for (const field of IMAGE_FIELDS) values[field] = String(formData.get(field) ?? "").trim();
+  values.partner_logos = JSON.stringify(formData.getAll("partner_logos").map(String).filter(Boolean));
 
   await saveSettings(values);
   refreshAll();
