@@ -38,10 +38,6 @@ export function SiteFooter({ site }: { site: SiteData }) {
   return (
     <footer className="site-footer">
       <div className="shell footer-grid">
-        <div className="footer-brand">
-          <Image src="/images/one-agency-logo.png" alt="ONE AGENCY" width={174} height={149} />
-        </div>
-
         {logos.length > 0 && (
           <div className="footer-partners">
             <h2>{site.settings.partners_title || "제휴 업체"}</h2>
