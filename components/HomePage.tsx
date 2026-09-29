@@ -57,6 +57,14 @@ export function HomePage({ site }: { site: SiteData }) {
 
   const firstMenu = topBoards(boards).find((board) => board.menu_show);
 
+  let guideImages: string[] = [];
+  try {
+    const parsed = JSON.parse(settings.guide_images ?? "[]");
+    if (Array.isArray(parsed)) guideImages = (parsed as string[]).filter(Boolean);
+  } catch {
+    guideImages = [];
+  }
+
   return (
     <>
       <a className="skip-link" href="#main-content">본문 바로가기</a>
@@ -165,6 +173,19 @@ export function HomePage({ site }: { site: SiteData }) {
           </div>
         </div>
       </section>
+
+      {guideImages.length > 0 && (
+        <section className="guide-section">
+          <div className="shell">
+            {settings.guide_title && <h2>{settings.guide_title}</h2>}
+            <div className="guide-grid">
+              {guideImages.map((image) => (
+                <Image key={image} src={image} alt="" width={900} height={1125} sizes="(max-width: 760px) 74vw, 24vw" />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="consult-banner" id="consult">
         {settings.banner_image && <Image src={settings.banner_image} alt="" fill sizes="100vw" />}

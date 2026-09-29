@@ -108,6 +108,7 @@ const TEXT_FIELDS = [
   "kakao_url",
   "telegram_url",
   "partners_title",
+  "guide_title",
 ];
 
 const IMAGE_FIELDS = ["hero_image", "banner_image"];
@@ -120,6 +121,7 @@ export async function saveSite(_state: FormState, formData: FormData): Promise<F
 
   for (const field of IMAGE_FIELDS) values[field] = String(formData.get(field) ?? "").trim();
   values.partner_logos = JSON.stringify(formData.getAll("partner_logos").map(String).filter(Boolean));
+  values.guide_images = JSON.stringify(formData.getAll("guide_images").map(String).filter(Boolean));
 
   await saveSettings(values);
   refreshAll();

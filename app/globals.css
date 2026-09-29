@@ -540,6 +540,13 @@ button, a, input, select, textarea { outline-offset: 3px; }
 .promise-list strong { display: block; font-size: 23px; line-height: 1.3; letter-spacing: -.035em; }
 .promise-list p { margin: 12px 0 0; color: var(--muted); font-size: 17px; line-height: 1.7; }
 
+/* Guide images */
+
+.guide-section { padding: 0 0 120px; background: #0d1014; }
+.guide-section h2 { margin: 0 0 36px; color: var(--ivory); font-size: clamp(28px, 2.6vw, 40px); font-weight: 800; letter-spacing: -.045em; }
+.guide-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.guide-grid img { width: 100%; height: auto; display: block; border: 1px solid var(--line-white); }
+
 /* Consult banner */
 
 .consult-banner { position: relative; min-height: 680px; display: flex; align-items: center; overflow: hidden; isolation: isolate; background: #0a0c0f; }
@@ -675,6 +682,8 @@ button, a, input, select, textarea { outline-offset: 3px; }
   .hero-signature { display: none; }
   .service-grid { grid-template-columns: repeat(3, 1fr); }
   .experience-section, .promise-section { padding-block: 110px; }
+  .guide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .guide-section { padding-bottom: 96px; }
   .experience-heading { grid-template-columns: 1fr; gap: 20px; }
   .experience-heading > a { grid-column: 1; }
   .promise-grid { grid-template-columns: 1fr; gap: 56px; }
@@ -722,6 +731,11 @@ button, a, input, select, textarea { outline-offset: 3px; }
   .promise-list article { min-height: 0; padding: 32px 28px; }
   .promise-list strong { font-size: 22px; }
   .promise-list p { font-size: 16px; }
+  .guide-section { padding-bottom: 72px; }
+  .guide-section h2 { margin-bottom: 20px; font-size: clamp(24px, 7vw, 30px); }
+  .guide-grid { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .guide-grid::-webkit-scrollbar { display: none; }
+  .guide-grid img { flex: 0 0 74vw; scroll-snap-align: start; }
   .consult-banner { min-height: 640px; align-items: flex-end; }
   .consult-banner > img { object-position: 65% center; }
   .consult-shade { background: linear-gradient(180deg, rgb(3 5 7 / 15%), rgb(3 5 7 / 96%) 70%); }

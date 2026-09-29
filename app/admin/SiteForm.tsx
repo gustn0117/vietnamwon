@@ -22,6 +22,7 @@ export function SiteForm({ settings }: { settings: Settings }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveSite, {});
   const value = (key: string) => settings[key] ?? "";
   const partnerLogos = parseLogos(settings.partner_logos);
+  const guideImages = parseLogos(settings.guide_images);
 
   return (
     <form className="admin-form" action={action}>
@@ -51,6 +52,13 @@ export function SiteForm({ settings }: { settings: Settings }) {
         <label>옆 설명 (줄바꿈 가능)<textarea name="experience_copy" rows={2} defaultValue={value("experience_copy")} /></label>
         <label>약속 영역 제목 (줄바꿈 가능)<textarea name="promise_heading" rows={2} defaultValue={value("promise_heading")} /></label>
         <label>약속 영역 설명<textarea name="promise_copy" rows={2} defaultValue={value("promise_copy")} /></label>
+      </section>
+
+      <section className="admin-section">
+        <h2>안내 사진</h2>
+        <p className="admin-hint">메인 화면 아래쪽, 상담 배너 바로 위에 순서대로 나열됩니다. 세로로 긴 사진이 잘 맞습니다.</p>
+        <label>제목<input name="guide_title" defaultValue={value("guide_title")} placeholder="카지노 이용 안내" /></label>
+        <ImageUploader name="guide_images" label="안내 사진" multiple initial={guideImages} />
       </section>
 
       <section className="admin-section">
