@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createPost, deletePost, getPostById, updatePost } from "@/lib/posts";
 import { cleanHtml } from "@/lib/html";
+import { pingIndexNow } from "@/lib/indexnow";
+import { absolute } from "@/lib/seo";
 import { checkPassword, endSession, requireSession, startSession } from "@/lib/session";
 import {
   boardHref,
@@ -76,6 +78,16 @@ export async function savePost(_state: FormState, formData: FormData): Promise<F
   }
 
   refreshAll();
+
+  const board = (await listBoards(true)).find((item) => item.slug === category);
+  if (board && published) {
+    const boards = await listBoards(true);
+    const path = board.parent
+      ? `/${boards.find((item) => item.slug === board.parent)?.segment ?? board.parent}/${board.segment}`
+      : `/${board.segment}`;
+    await pingIndexNow([absolute(`${path}/${slug}`), absolute(path), absolute("/")]);
+  }
+
   redirect("/admin");
 }
 
