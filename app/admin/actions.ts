@@ -8,7 +8,6 @@ import { pingIndexNow } from "@/lib/indexnow";
 import { absolute } from "@/lib/seo";
 import { checkPassword, endSession, requireSession, startSession } from "@/lib/session";
 import {
-  boardHref,
   deleteBoard as removeBoardRow,
   getBoard,
   listBoards,
@@ -196,4 +195,3 @@ export async function removeBoard(formData: FormData) {
   redirect("/admin/boards");
 }
 
-export { boardHref };
